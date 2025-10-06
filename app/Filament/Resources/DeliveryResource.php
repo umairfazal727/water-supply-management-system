@@ -165,10 +165,7 @@ class DeliveryResource extends Resource
                         'delivered' => 'Delivered',
                         'cancelled' => 'Cancelled',
                     ]),
-                Tables\Filters\SelectFilter::make('driver')
-                    ->relationship('driver', 'name'),
-                Tables\Filters\SelectFilter::make('vehicle')
-                    ->relationship('vehicle', 'plate_number'),
+              
                 Tables\Filters\Filter::make('delivery_date')
                     ->form([
                         Forms\Components\DatePicker::make('from'),

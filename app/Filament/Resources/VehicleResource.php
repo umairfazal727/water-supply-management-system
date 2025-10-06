@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Filament\Resources\VehicleResource\RelationManagers;
+use App\Models\Branch;
 use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -37,8 +38,12 @@ class VehicleResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(0.00),
-                Forms\Components\TextInput::make('branch_id')
-                    ->numeric(),
+                Forms\Components\Select::make('branch_id')
+                    ->label('Branch')
+                    ->options(Branch::where('is_active', true)->pluck('name', 'id'))
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
             ]);

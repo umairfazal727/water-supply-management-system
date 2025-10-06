@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DriverResource\Pages;
 use App\Filament\Resources\DriverResource\RelationManagers;
 use App\Models\Driver;
+use App\Models\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -31,8 +32,12 @@ class DriverResource extends Resource
                     ->maxLength(191),
                 Forms\Components\TextInput::make('license_number')
                     ->maxLength(191),
-                Forms\Components\TextInput::make('branch_id')
-                    ->numeric(),
+                Forms\Components\Select::make('branch_id')
+                    ->label('Branch')
+                    ->options(Branch::where('is_active', true)->pluck('name', 'id'))
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
             ]);
