@@ -66,4 +66,57 @@ class UtilityController extends Controller
         $mpdf->WriteHTML($html);
         return $mpdf->Output('invoice-'.$order_id.'.pdf', 'I');
     }
+
+    public function downloadStatement($customer_id, Request $request)
+    {
+        $customer = \App\Models\Customer::findOrFail($customer_id);
+        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
+        
+        // Get orders with payment_type = 'on_account' (pending/deferred)
+        $orders = Order::where('customer_id', $customer_id)
+            ->where('payment_type', 'on_account')
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->orderBy('order_date', 'desc')
+            ->get();
+        
+        $data = [
+            'customer' => $customer,
+            'orders' => $orders,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'totalAmount' => $orders->sum('total_price'),
+        ];
+
+        $html = view('invoices.statement', $data)->render();
+
+        $mpdf = new Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+        ]);
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('statement-'.$customer_id.'.pdf', 'I');
+    }
+
+    public function downloadInvoice($order_id)
+    {
+        $order = Order::with(['customer', 'branch'])->findOrFail($order_id);
+        
+        $data = [
+            'order' => $order,
+        ];
+
+        $html = view('invoices.invoice', $data)->render();
+
+        $mpdf = new Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+        ]);
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('invoice-'.$order_id.'.pdf', 'I');
+    }
 }

@@ -93,6 +93,7 @@
                                 <option value="cash">Cash</option>
                                 <option value="credit">Credit</option>
                                 <option value="bank_transfer">Bank Transfer</option>
+                                <option value="on_account">On Account (Deferred)</option>
                             </select>
                         </div>
 

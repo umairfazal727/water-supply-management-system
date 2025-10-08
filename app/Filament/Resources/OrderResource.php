@@ -75,6 +75,7 @@ class OrderResource extends Resource
                                 'success' => 'cash',
                                 'warning' => 'credit',
                                 'info' => 'bank_transfer',
+                                'danger' => 'on_account',
                             ])
                             ->formatStateUsing(fn ($state) => ucfirst(str_replace('_', ' ', $state))),
                 TextColumn::make('order_date')
