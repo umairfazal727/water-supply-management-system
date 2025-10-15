@@ -16,69 +16,67 @@ class DashboardStatsWidget extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $totalBranches = Branch::count();
-        // $totalCustomers = Customer::count();
-        // $totalVehicles = Vehicle::count();
-        // $totalDrivers = Driver::count();
+        $stats = [];
         
-        // $todayExpenses = Expense::whereDate('expense_date', today())->sum('amount');
-        $todayDeliveries = Delivery::whereDate('delivery_date', today())->count();
-        $todayOrders = Order::whereDate('created_at', today())->count();
+        // Get all branches excluding transport
+        $branches = Branch::where('is_active', true)
+            ->where('name', 'not like', '%transport%')
+            ->get();
         
-        $pendingExpenses = Expense::where('is_approved', false)->count();
-        $scheduledDeliveries = Delivery::where('status', 'scheduled')->count();
-        // $activeVehicles = Vehicle::where('is_active', true)->count();
-        
-        return [
-            Stat::make('Total Branches', $totalBranches)
-                ->description('Active branches')
-                ->descriptionIcon('heroicon-m-building-office-2')
-                ->color('success'),
-                
-            // Stat::make('Total Customers', $totalCustomers)
-            //     ->description('Registered customers')
-            //     ->descriptionIcon('heroicon-m-users')
-            //     ->color('info'),
-                
-            // Stat::make('Total Vehicles', $totalVehicles)
-            //     ->description('Fleet vehicles')
-            //     ->descriptionIcon('heroicon-m-truck')
-            //     ->color('warning'),
-                
-            // Stat::make('Total Drivers', $totalDrivers)
-            //     ->description('Active drivers')
-            //     ->descriptionIcon('heroicon-m-user')
-            //     ->color('primary'),
-                
-            // Stat::make('Today\'s Expenses', 'SAR ' . number_format($todayExpenses, 2))
-            //     ->description('Daily expense total')
-            //     ->descriptionIcon('heroicon-m-currency-dollar')
-            //     ->color('danger'),
-                
-            Stat::make('Today\'s Deliveries', $todayDeliveries)
-                ->description('Completed deliveries')
-                ->descriptionIcon('heroicon-m-truck')
-                ->color('success'),
-                
-            Stat::make('Today\'s Orders', $todayOrders)
-                ->description('POS transactions')
+        foreach ($branches as $branch) {
+            // Orders stats for this branch
+            $branchOrders = Order::where('branch_id', $branch->id)
+                ->whereDate('created_at', today())
+                ->count();
+            
+            $branchOrdersTotal = Order::where('branch_id', $branch->id)
+                ->whereDate('created_at', today())
+                ->sum('price');
+            
+            // Deliveries stats for this branch
+            $branchDeliveries = Delivery::where('branch_id', $branch->id)
+                ->whereDate('delivery_date', today())
+                ->count();
+            
+            $branchExpenses = Expense::where('branch_id', $branch->id)
+                ->where('expense_type', 'general')
+                ->whereDate('expense_date', today())
+                ->sum('amount');
+            
+            // Add branch header stat
+            $stats[] = Stat::make($branch->name . ' - Orders', $branchOrders)
+                ->description('Total: AED ' . number_format($branchOrdersTotal, 2))
                 ->descriptionIcon('heroicon-m-shopping-cart')
-                ->color('info'),
-                
-            Stat::make('Pending Expenses', $pendingExpenses)
-                ->description('Awaiting approval')
-                ->descriptionIcon('heroicon-m-clock')
-                ->color('warning'),
-                
-            Stat::make('Scheduled Deliveries', $scheduledDeliveries)
-                ->description('Upcoming deliveries')
-                ->descriptionIcon('heroicon-m-calendar')
-                ->color('info'),
-                
-            // Stat::make('Active Vehicles', $activeVehicles)
-            //     ->description('Operational vehicles')
-            //     ->descriptionIcon('heroicon-m-truck')
-            //     ->color('success'),
-        ];
+                ->color('primary')
+                ->chart([7, 3, 4, 5, 6, 3, 5]);
+            
+            $stats[] = Stat::make($branch->name . ' - Deliveries', $branchDeliveries)
+                ->description('Today\'s deliveries')
+                ->descriptionIcon('heroicon-m-truck')
+                ->color('success');
+            
+            $stats[] = Stat::make($branch->name . ' - Expenses', 'AED ' . number_format($branchExpenses, 2))
+                ->description('Today\'s expenses')
+                ->descriptionIcon('heroicon-m-currency-dollar')
+                ->color('danger');
+        }
+        
+        // Global stats
+        $pendingExpenses = Expense::where('is_approved', false)
+            ->where('expense_type', 'general')
+            ->count();
+        $scheduledDeliveries = Delivery::where('status', 'scheduled')->count();
+        
+        $stats[] = Stat::make('Pending Expenses', $pendingExpenses)
+            ->description('Awaiting approval')
+            ->descriptionIcon('heroicon-m-clock')
+            ->color('warning');
+            
+        $stats[] = Stat::make('Scheduled Deliveries', $scheduledDeliveries)
+            ->description('Upcoming deliveries')
+            ->descriptionIcon('heroicon-m-calendar')
+            ->color('info');
+        
+        return $stats;
     }
 }

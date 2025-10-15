@@ -24,6 +24,7 @@ class Cart extends Component
     public $price = 0;
     public $orderDate;
     public $paymentType = 'cash';
+    public $branchId;
 
     private $currency_symbol;
 
@@ -60,6 +61,7 @@ class Cart extends Component
                 $this->tankerSize = $customer->tanker_size;
                 $this->productType = $customer->product_type;
                 $this->price = $customer->price;
+                $this->branchId = $customer->vehicle && $customer->vehicle->branch_id ? $customer->vehicle->branch_id : null;
             }
         } else {
             $this->clearFields();
@@ -93,7 +95,7 @@ class Cart extends Component
             'price' => $this->price,
             'total_price' => $this->price,
             'payment_type' => $this->paymentType,
-            'branch_id' => $customer->vehicle ? $customer->vehicle->branch_id : null,
+            'branch_id' => $this->branchId,
             'order_date' => $this->orderDate,
         ]);
 

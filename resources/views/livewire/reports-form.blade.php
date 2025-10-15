@@ -23,8 +23,7 @@
                     class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 <option value="profit_loss">Profit & Loss</option>
                 <option value="monthly_sales">Monthly Sales</option>
-                <option value="expense_driver">Expenses by Driver</option>
-                <option value="expense_vehicle">Expenses by Vehicle</option>
+                <option value="expense_categories">Expenses by Categories</option>
                 <option value="customer_statements">Customer Statements</option>
                 <option value="all_expenses">All Expenses</option>
             </select>
@@ -79,6 +78,31 @@
                         {{ $customer->company_name ?: $customer->first_name . ' ' . $customer->last_name }}
                     </option>
                 @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Expense Category -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expense Category</label>
+            <select wire:model.live="expenseCategoryId"
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="">All Categories</option>
+                @foreach($expenseCategories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Expense Type -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expense Type</label>
+            <select wire:model.live="expenseType"
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="">All Types</option>
+                <option value="general">General</option>
+                <option value="transport">Transport</option>
             </select>
         </div>
     </div>

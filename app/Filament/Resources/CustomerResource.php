@@ -93,6 +93,16 @@ class CustomerResource extends Resource
                             ->default(0)
                             ->required(),
                     ]),
+                Grid::make(1)
+                    ->schema([
+                        TextInput::make('opening_balance')
+                            ->label('Opening Balance')
+                            ->numeric()
+                            ->default(0)
+                            ->step(0.01)
+                            ->helperText('Positive for advance payment, negative for outstanding balance')
+                            ->nullable(),
+                    ]),
                 FileUpload::make('avatar')
                     ->image()
                     ->visibility('public')
@@ -124,6 +134,17 @@ class CustomerResource extends Resource
                 TextColumn::make('price')
                     ->money('USD')
                     ->sortable(),
+                TextColumn::make('opening_balance')
+                    ->label('Opening Balance')
+                    ->money('AED')
+                    ->sortable()
+                    ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray')),
+                TextColumn::make('current_balance')
+                    ->label('Current Balance')
+                    ->getStateUsing(fn ($record) => $record->getCurrentBalance())
+                    ->money('AED')
+                    ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray'))
+                    ->sortable(false),
                 TextColumn::make('orders_count')
                     ->label('Orders')
                     ->counts('orders')  
@@ -133,6 +154,43 @@ class CustomerResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('view_ledger')
+                    ->label('View Ledger')
+                    ->icon('heroicon-o-document-text')
+                    ->color('primary')
+                    ->url(fn ($record) => route('filament.admin.pages.customer-ledger-view', ['customer_id' => $record->id]))
+                    ->openUrlInNewTab(),
+                Tables\Actions\Action::make('add_payment')
+                    ->label('Add Payment')
+                    ->icon('heroicon-o-plus-circle')
+                    ->color('success')
+                    ->form([
+                        TextInput::make('amount')
+                            ->label('Payment Amount')
+                            ->numeric()
+                            ->required()
+                            ->step(0.01),
+                        Forms\Components\DatePicker::make('payment_date')
+                            ->label('Payment Date')
+                            ->default(now())
+                            ->required(),
+                        Textarea::make('description')
+                            ->label('Description')
+                            ->default('Payment received')
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        \App\Models\Ledger::createEntry([
+                            'customer_id' => $record->id,
+                            'transaction_date' => $data['payment_date'],
+                            'entry_origin' => 'PAY-' . now()->format('Ymd'),
+                            'debit_amount' => $data['amount'],
+                            'credit_amount' => 0,
+                            'description' => $data['description'],
+                            'transaction_type' => 'payment'
+                        ]);
+                    })
+                    ->requiresConfirmation(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

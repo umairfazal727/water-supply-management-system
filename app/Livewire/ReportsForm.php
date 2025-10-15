@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Driver;
 use App\Models\Vehicle;
 use App\Models\Customer;
+use App\Models\ExpenseCategory;
 
 class ReportsForm extends Component
 {
@@ -17,11 +18,14 @@ class ReportsForm extends Component
     public $driverId;
     public $vehicleId;
     public $customerId;
+    public $expenseCategoryId;
+    public $expenseType;
 
     public $branches = [];
     public $drivers = [];
     public $vehicles = [];
     public $customers = [];
+    public $expenseCategories = [];
 
     public function mount()
     {
@@ -36,6 +40,7 @@ class ReportsForm extends Component
         $this->drivers = Driver::where('is_active', true)->get();
         $this->vehicles = Vehicle::where('is_active', true)->get();
         $this->customers = Customer::all();
+        $this->expenseCategories = ExpenseCategory::all();
     }
 
     public function updated()
@@ -48,6 +53,8 @@ class ReportsForm extends Component
             'driverId' => $this->driverId,
             'vehicleId' => $this->vehicleId,
             'customerId' => $this->customerId,
+            'expenseCategoryId' => $this->expenseCategoryId,
+            'expenseType' => $this->expenseType,
         ]);
     }
 

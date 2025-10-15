@@ -20,6 +20,27 @@ class Order extends Model
         'order_date'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($order) {
+            // Create ledger entry for credit orders
+            if (in_array($order->payment_type, ['credit', 'on_account'])) {
+                Ledger::createEntry([
+                    'customer_id' => $order->customer_id,
+                    'order_id' => $order->id,
+                    'transaction_date' => $order->order_date ?? now(),
+                    'entry_origin' => 'ORDER-' . $order->id,
+                    'debit_amount' => 0,
+                    'credit_amount' => $order->price,
+                    'description' => "Order #{$order->id} - {$order->product_type} delivery - {$order->tanker_size} tanker",
+                    'transaction_type' => 'order'
+                ]);
+            }
+        });
+    }
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);

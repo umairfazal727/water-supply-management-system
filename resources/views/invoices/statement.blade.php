@@ -31,8 +31,9 @@
         margin-bottom: 15px;
     }
     .header img {
-        width: 150px;
-        height: auto;
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
     }
     .company-info {
         flex: 1;
@@ -109,6 +110,8 @@
     }
     .stamp img {
         width: 200px;
+        height: 200px;
+        object-fit: contain;
         opacity: 0.8;
     }
 
