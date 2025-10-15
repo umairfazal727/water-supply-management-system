@@ -15,15 +15,9 @@
                      class="p-3 border-b border-gray-200 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 {{ $selectedCustomer && $selectedCustomer->id === $customer->id ? 'bg-blue-100 dark:bg-blue-900' : '' }}">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="font-medium text-gray-900 dark:text-white">
-                                {{ $customer->first_name . ' ' . $customer->last_name }}
-                            </div>
-                            @if($customer->company_name)
-                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ $customer->company_name }}</div>
-                            @endif
-                            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <div class="flex items-center space-x-2">
                                 @if($customer->vehicle)
-                                    <span class="inline-flex items-center">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
                                             <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"/>
@@ -32,7 +26,7 @@
                                     </span>
                                 @endif
                                 @if($customer->driver)
-                                    <span class="inline-flex items-center ml-2">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                         </svg>
@@ -40,6 +34,16 @@
                                     </span>
                                 @endif
                             </div>
+                            @if($customer->company_name)
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span class="font-medium">{{ $customer->company_name }}</span>
+                                </div>
+                            @endif
+                            @if($customer->vehicle && $customer->vehicle->branch)
+                                <div class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                    Branch: <span class="font-medium">{{ $customer->vehicle->branch->name }}</span>
+                                </div>
+                            @endif
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-green-600 dark:text-green-400">
@@ -69,7 +73,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <span class="text-sm font-medium text-green-800 dark:text-green-200">Selected:</span>
-                    <span class="text-sm text-green-700 dark:text-green-300">{{ $selectedCustomer->first_name . ' ' . $selectedCustomer->last_name }}</span>
+                    <span class="text-sm text-green-700 dark:text-green-300">{{ $selectedCustomer->company_name ?: ($selectedCustomer->first_name . ' ' . $selectedCustomer->last_name) }}</span>
+                    @if($selectedCustomer->vehicle && $selectedCustomer->vehicle->branch)
+                        <div class="text-xs text-green-600 dark:text-green-400 mt-1">
+                            Branch: {{ $selectedCustomer->vehicle->branch->name }}
+                        </div>
+                    @endif
                 </div>
                 <button wire:click="clear" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

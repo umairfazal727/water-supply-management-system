@@ -92,11 +92,18 @@
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <option value="cash">Cash</option>
                                 <option value="credit">Credit</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="on_account">On Account (Deferred)</option>
                             </select>
                         </div>
-
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Branch</label>
+                            <select wire:model="branchId" 
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="">Select Branch</option>
+                                @foreach(\App\Models\Branch::all() as $branch)
+                                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date & Time</label>
                             <input type="datetime-local" 

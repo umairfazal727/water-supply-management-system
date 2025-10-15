@@ -15,6 +15,7 @@ class Expense extends Model
         'user_id',
         'driver_id',
         'vehicle_id',
+        'expense_type',
         'title',
         'description',
         'amount',

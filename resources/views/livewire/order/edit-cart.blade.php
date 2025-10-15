@@ -49,26 +49,32 @@
                     <h4 class="font-medium text-gray-900 dark:text-white border-b pb-2">Vehicle & Company Information</h4>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Transport Name <span class="text-xs text-blue-600 font-semibold">(HIGHLIGHTED)</span>
+                        </label>
                         <input type="text" 
                                wire:model="companyName" 
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                               class="mt-1 block w-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
                         @error('companyName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Number</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Vehicle Number <span class="text-xs text-green-600 font-semibold">(HIGHLIGHTED)</span>
+                        </label>
                         <input type="text" 
                                wire:model="vehicleNumber" 
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                               class="mt-1 block w-full border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
                         @error('vehicleNumber') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Driver Name</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Driver Name <span class="text-xs text-purple-600 font-semibold">(HIGHLIGHTED)</span>
+                        </label>
                         <input type="text" 
                                wire:model="driverName" 
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                               class="mt-1 block w-full border-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
                         @error('driverName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 

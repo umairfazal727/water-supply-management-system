@@ -30,8 +30,9 @@
     }
 
     .logo {
-        width: 140px;
-        height: auto;
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
     }
 
     .company-info {
@@ -140,7 +141,9 @@
     }
 
     .footer img {
-        width: 160px;
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
         margin-top: 10px;
     }
 
