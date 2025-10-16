@@ -32,11 +32,12 @@ class DeliveryResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
-                Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'first_name')
+                Forms\Components\Select::make('delivery_customer_id')
+                    ->relationship('deliveryCustomer', 'name')
                     ->required()
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->label('Delivery Customer'),
                 Forms\Components\Select::make('order_id')
                     ->relationship('order', 'id')
                     ->searchable()
@@ -108,7 +109,8 @@ class DeliveryResource extends Resource
                 Tables\Columns\TextColumn::make('delivery_number')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('customer.first_name')
+                Tables\Columns\TextColumn::make('deliveryCustomer.name')
+                    ->label('Customer')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('delivery_date')

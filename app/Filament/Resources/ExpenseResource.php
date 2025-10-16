@@ -90,6 +90,7 @@ class ExpenseResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $currency_symbol = config('settings.currency_symbol');
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
@@ -101,7 +102,7 @@ class ExpenseResource extends Resource
                     ->sortable()
                     ->badge(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->money('SAR')
+                    ->money($currency_symbol)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('expense_date')
                     ->date()

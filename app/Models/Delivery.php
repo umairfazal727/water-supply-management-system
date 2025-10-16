@@ -13,6 +13,7 @@ class Delivery extends Model
     protected $fillable = [
         'branch_id',
         'customer_id',
+        'delivery_customer_id',
         'order_id',
         'delivery_number',
         'delivery_date',
@@ -47,6 +48,11 @@ class Delivery extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function deliveryCustomer(): BelongsTo
+    {
+        return $this->belongsTo(DeliveryCustomer::class);
     }
 
     public function vehicle(): BelongsTo
