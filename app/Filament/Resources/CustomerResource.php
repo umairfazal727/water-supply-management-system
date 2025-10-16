@@ -114,6 +114,8 @@ class CustomerResource extends Resource
 
     public static function table(Tables\Table $table): Tables\Table
     {
+        $currency_symbol = config('settings.currency_symbol');
+
         return $table
             ->columns([
                 TextColumn::make('first_name')->sortable()->searchable(),
@@ -132,17 +134,17 @@ class CustomerResource extends Resource
                         'warning' => 'salt_water',
                     ]),
                 TextColumn::make('price')
-                    ->money('USD')
+                    ->money($currency_symbol)
                     ->sortable(),
                 TextColumn::make('opening_balance')
                     ->label('Opening Balance')
-                    ->money('AED')
+                    ->money($currency_symbol)
                     ->sortable()
                     ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray')),
                 TextColumn::make('current_balance')
                     ->label('Current Balance')
                     ->getStateUsing(fn ($record) => $record->getCurrentBalance())
-                    ->money('AED')
+                    ->money($currency_symbol)
                     ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray'))
                     ->sortable(false),
                 TextColumn::make('orders_count')

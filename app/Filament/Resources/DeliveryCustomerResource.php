@@ -67,6 +67,8 @@ class DeliveryCustomerResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $currency_symbol = config('settings.currency_symbol');
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
@@ -82,7 +84,7 @@ class DeliveryCustomerResource extends Resource
                 Tables\Columns\TextColumn::make('delivery_location')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('opening_balance')
-                    ->money('AED')
+                    ->money($currency_symbol)
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
