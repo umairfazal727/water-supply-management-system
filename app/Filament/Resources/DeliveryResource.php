@@ -98,6 +98,7 @@ class DeliveryResource extends Resource
                     ->directory('delivery-photos')
                     ->visibility('private'),
                 Forms\Components\DateTimePicker::make('delivered_at')
+                    ->default(now()->format('Y-m-d H:i'))
                     ->label('Delivered At'),
             ]);
     }

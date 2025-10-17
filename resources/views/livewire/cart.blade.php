@@ -37,7 +37,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transport Name</label>
                             <input type="text" 
                                    wire:model="companyName" 
                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">

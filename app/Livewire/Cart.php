@@ -23,7 +23,7 @@ class Cart extends Component
     public $price = 0;
     public $orderDate;
     public $paymentType = 'cash';
-
+    public $branchId;
     private $currency_symbol;
 
     public function mount()
@@ -53,6 +53,7 @@ class Cart extends Component
             if ($customer) {
                 $this->customerName = $customer->first_name . ' ' . $customer->last_name;
                 $this->vehicleNumber = $customer->vehicle ? $customer->vehicle->vehicle_number : '';
+                $this->branchId = $customer->vehicle && $customer->vehicle->branch_id ? $customer->vehicle->branch_id : null;
                 $this->driverName = $customer->driver ? $customer->driver->name : '';
                 $this->companyName = $customer->company_name;
                 $this->tankerSize = $customer->tanker_size;
