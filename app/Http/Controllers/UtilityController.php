@@ -125,14 +125,15 @@ class UtilityController extends Controller
     public function downloadStatementByCompany($company_name, Request $request)
     {
         $company_name = urldecode($company_name);
+        $company_name = trim($company_name);
         $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
         
-        // Get all customer IDs with this company name
-        $customerIds = Customer::where('company_name', $company_name)->pluck('id');
+        // Get all customer IDs with this company name (trim and match)
+        $customerIds = Customer::whereRaw('TRIM(company_name) = ?', [$company_name])->pluck('id');
         
         if ($customerIds->isEmpty()) {
-            abort(404, 'No customers found with this company name.');
+            abort(404, 'No customers found with this company name: ' . $company_name);
         }
         
         // Get orders with payment_type = 'credit' (or 'on_account' for pending payments)

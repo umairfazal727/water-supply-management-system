@@ -84,9 +84,17 @@ class Reports extends Page
         }
 
         if ($this->companyName) {
-            // Get all customers with this company name
-            $customerIds = Customer::where('company_name', $this->companyName)->pluck('id');
-            $query->whereIn('customer_id', $customerIds);
+            // Get all customers with this company name (trim and match exactly)
+            $trimmedCompanyName = trim($this->companyName);
+            $customerIds = Customer::whereRaw('TRIM(company_name) = ?', [$trimmedCompanyName])
+                ->pluck('id');
+            
+            if ($customerIds->isNotEmpty()) {
+                $query->whereIn('customer_id', $customerIds);
+            } else {
+                // No customers found, return empty result
+                $query->whereRaw('1 = 0'); // This makes the query return no results
+            }
         }
 
         $orders = $query->orderBy('order_date', 'desc')->get();

@@ -32,13 +32,15 @@ class ReportsForm extends Component
     {
         $this->branches = Branch::where('is_active', true)->get();
         
-        // Get distinct company names
-        $this->companyNames = Customer::select('company_name')
+        // Get distinct company names (trimmed and non-empty)
+        $this->companyNames = Customer::selectRaw('TRIM(company_name) as company_name')
             ->whereNotNull('company_name')
             ->where('company_name', '!=', '')
             ->distinct()
             ->orderBy('company_name')
-            ->pluck('company_name');
+            ->pluck('company_name')
+            ->filter() // Remove any empty values
+            ->values(); // Re-index array
         
         $this->expenseCategories = ExpenseCategory::all();
     }
