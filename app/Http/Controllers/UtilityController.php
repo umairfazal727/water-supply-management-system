@@ -129,10 +129,8 @@ class UtilityController extends Controller
         $company_name = trim($company_name);
         $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
-        
         // Debug: Log the company name being searched
         Log::info('Searching for company: ' . $company_name);
-        
         // Get all customer IDs with this company name (trim and case-insensitive match)
         $customerIds = Customer::whereRaw('LOWER(TRIM(company_name)) = LOWER(?)', [$company_name])->pluck('id');
         
