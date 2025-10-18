@@ -153,7 +153,6 @@ class UtilityController extends Controller
             ->whereBetween('order_date', [$startDate, $endDate])
             ->orderBy('order_date', 'desc')
             ->get();
-            dd()
         dd($orders, $customerIds, $company_name, $request);
         // Debug: Log order count
         Log::info('Found orders count: ' . $orders->count());
