@@ -147,14 +147,14 @@ class UtilityController extends Controller
             
             abort(404, 'No customers found with company name: "' . $company_name . '". Available companies: ' . $existingCompanies->implode(', '));
         }
-        
         // Get orders with payment_type = 'credit'
         $orders = Order::whereIn('customer_id', $customerIds)
             ->where('payment_type', 'credit')
             ->whereBetween('order_date', [$startDate, $endDate])
             ->orderBy('order_date', 'desc')
             ->get();
-        
+            dd()
+        dd($orders, $customerIds, $company_name, $request);
         // Debug: Log order count
         Log::info('Found orders count: ' . $orders->count());
         
