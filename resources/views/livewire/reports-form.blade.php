@@ -78,7 +78,9 @@
     <div class="flex justify-end">
         <button wire:click="submitReport" 
                 wire:loading.attr="disabled"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+                class="
+                bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded
+                c disabled:opacity-50 disabled:cursor-not-allowed">
             <span wire:loading.remove wire:target="submitReport">Generate Report</span>
             <span wire:loading wire:target="submitReport">Generating...</span>
         </button>
