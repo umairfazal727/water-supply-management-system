@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Ledger;
 use Mpdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UtilityController extends Controller
 {
@@ -129,19 +130,35 @@ class UtilityController extends Controller
         $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
         
-        // Get all customer IDs with this company name (trim and match)
-        $customerIds = Customer::whereRaw('TRIM(company_name) = ?', [$company_name])->pluck('id');
+        // Debug: Log the company name being searched
+        Log::info('Searching for company: ' . $company_name);
+        
+        // Get all customer IDs with this company name (trim and case-insensitive match)
+        $customerIds = Customer::whereRaw('LOWER(TRIM(company_name)) = LOWER(?)', [$company_name])->pluck('id');
+        
+        // Debug: Log found customer IDs
+        Log::info('Found customer IDs: ' . $customerIds->implode(', '));
         
         if ($customerIds->isEmpty()) {
-            abort(404, 'No customers found with this company name: ' . $company_name);
+            // Debug: Show what companies exist in database
+            $existingCompanies = Customer::whereNotNull('company_name')
+                ->where('company_name', '!=', '')
+                ->pluck('company_name')
+                ->unique()
+                ->sort();
+            
+            abort(404, 'No customers found with company name: "' . $company_name . '". Available companies: ' . $existingCompanies->implode(', '));
         }
         
-        // Get orders with payment_type = 'credit' (or 'on_account' for pending payments)
+        // Get orders with payment_type = 'credit'
         $orders = Order::whereIn('customer_id', $customerIds)
             ->where('payment_type', 'credit')
             ->whereBetween('order_date', [$startDate, $endDate])
             ->orderBy('order_date', 'desc')
             ->get();
+        
+        // Debug: Log order count
+        Log::info('Found orders count: ' . $orders->count());
         
         $data = [
             'company_name' => $company_name,
