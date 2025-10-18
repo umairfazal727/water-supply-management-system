@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice Statement</title>
+<title>Company Statement</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -157,10 +157,10 @@
             <td>{{ date('d/m/Y') }}</td>
         </tr>
         <tr>
-            <td class="label">MOBILE NUMBER:</td>
-            <td>{{ $customer->phone ?? 'N/A' }}</td>
-            <td class="label">CUSTOMER:</td>
-            <td>{{ $customer->company_name ?: $customer->first_name . ' ' . $customer->last_name }}</td>
+            <td class="label">PERIOD:</td>
+            <td>{{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}</td>
+            <td class="label">COMPANY:</td>
+            <td>{{ $company_name }}</td>
         </tr>
     </table>
 
@@ -172,26 +172,36 @@
                     <th>S.NO</th>
                     <th>INVOICE NUMBER</th>
                     <th>INVOICE DATE</th>
+                    <th>CUSTOMER/DRIVER</th>
+                    <th>VEHICLE</th>
                     <th>INVOICE AMOUNT</th>
                     <th>CURRENCY</th>
                     <th>STATUS</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($orders as $index => $order)
+                @forelse($orders as $index => $order)
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
-                    <td>{{ \Carbon\Carbon::parse($order->order_date)->format('M-Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
+                    <td>{{ $order->customer_name }}</td>
+                    <td>{{ $order->vehicle_number }}</td>
                     <td>{{ number_format($order->total_price, 2) }}</td>
                     <td>AED</td>
                     <td>{{ $order->payment_type === 'credit' ? 'PENDING' : strtoupper($order->payment_type) }}</td>
                 </tr>
-                @endforeach
+                @empty
                 <tr>
-                    <td colspan="5" style="text-align: left;"><b>TOTAL AMOUNT: {{ strtoupper(\NumberFormatter::create('en', \NumberFormatter::SPELLOUT)->format($totalAmount)) }} DIRHAMS ONLY</b></td>
+                    <td colspan="8" style="text-align: center;">No credit orders found for this period</td>
+                </tr>
+                @endforelse
+                @if($orders->count() > 0)
+                <tr>
+                    <td colspan="7" style="text-align: left;"><b>TOTAL AMOUNT: {{ strtoupper(\NumberFormatter::create('en', \NumberFormatter::SPELLOUT)->format($totalAmount)) }} DIRHAMS ONLY</b></td>
                     <td><b>{{ number_format($totalAmount, 2) }} AED</b></td>
                 </tr>
+                @endif
             </tbody>
         </table>
     </div>
@@ -206,3 +216,4 @@
 
 </body>
 </html>
+

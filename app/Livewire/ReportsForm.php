@@ -4,27 +4,21 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Branch;
-use App\Models\Driver;
-use App\Models\Vehicle;
 use App\Models\Customer;
 use App\Models\ExpenseCategory;
+use Illuminate\Support\Facades\DB;
 
 class ReportsForm extends Component
 {
     public $startDate;
     public $endDate;
-    public $reportType = 'profit_loss';
+    public $reportType = 'customer_base';
     public $branchId;
-    public $driverId;
-    public $vehicleId;
-    public $customerId;
+    public $companyName;
     public $expenseCategoryId;
-    public $expenseType;
 
     public $branches = [];
-    public $drivers = [];
-    public $vehicles = [];
-    public $customers = [];
+    public $companyNames = [];
     public $expenseCategories = [];
 
     public function mount()
@@ -37,24 +31,40 @@ class ReportsForm extends Component
     public function loadOptions()
     {
         $this->branches = Branch::where('is_active', true)->get();
-        $this->drivers = Driver::where('is_active', true)->get();
-        $this->vehicles = Vehicle::where('is_active', true)->get();
-        $this->customers = Customer::all();
+        
+        // Get distinct company names
+        $this->companyNames = Customer::select('company_name')
+            ->whereNotNull('company_name')
+            ->where('company_name', '!=', '')
+            ->distinct()
+            ->orderBy('company_name')
+            ->pluck('company_name');
+        
         $this->expenseCategories = ExpenseCategory::all();
     }
 
-    public function updated()
+    public function updatedReportType()
     {
-        $this->dispatch('filtersUpdated', [
+        // Reset conditional fields when report type changes
+        $this->companyName = '';
+        $this->expenseCategoryId = '';
+    }
+
+    public function submitReport()
+    {
+        $this->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+            'reportType' => 'required|in:customer_base,expense_base',
+        ]);
+
+        $this->dispatch('generateReport', [
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
             'reportType' => $this->reportType,
             'branchId' => $this->branchId,
-            'driverId' => $this->driverId,
-            'vehicleId' => $this->vehicleId,
-            'customerId' => $this->customerId,
+            'companyName' => $this->companyName,
             'expenseCategoryId' => $this->expenseCategoryId,
-            'expenseType' => $this->expenseType,
         ]);
     }
 

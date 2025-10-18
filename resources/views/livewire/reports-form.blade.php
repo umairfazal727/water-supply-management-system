@@ -4,35 +4,24 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
             <input type="date" 
-                   wire:model.live="startDate"
+                   wire:model="startDate"
                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            @error('startDate') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
         <!-- End Date -->
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
             <input type="date" 
-                   wire:model.live="endDate"
+                   wire:model="endDate"
                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-        </div>
-
-        <!-- Report Type -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Report Type</label>
-            <select wire:model.live="reportType"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="profit_loss">Profit & Loss</option>
-                <option value="monthly_sales">Monthly Sales</option>
-                <option value="expense_categories">Expenses by Categories</option>
-                <option value="customer_statements">Customer Statements</option>
-                <option value="all_expenses">All Expenses</option>
-            </select>
+            @error('endDate') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
         <!-- Branch -->
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Branch</label>
-            <select wire:model.live="branchId"
+            <select wire:model="branchId"
                     class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 <option value="">All Branches</option>
                 @foreach($branches as $branch)
@@ -40,70 +29,58 @@
                 @endforeach
             </select>
         </div>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Driver -->
+        <!-- Report Type -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Driver</label>
-            <select wire:model.live="driverId"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Report Type</label>
+            <select wire:model.live="reportType"
                     class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">All Drivers</option>
-                @foreach($drivers as $driver)
-                    <option value="{{ $driver->id }}">{{ $driver->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Vehicle -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vehicle</label>
-            <select wire:model.live="vehicleId"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">All Vehicles</option>
-                @foreach($vehicles as $vehicle)
-                    <option value="{{ $vehicle->id }}">{{ $vehicle->vehicle_number }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Customer -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer</label>
-            <select wire:model.live="customerId"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">All Customers</option>
-                @foreach($customers as $customer)
-                    <option value="{{ $customer->id }}">
-                        {{ $customer->company_name ?: $customer->first_name . ' ' . $customer->last_name }}
-                    </option>
-                @endforeach
+                <option value="customer_base">Customer Base</option>
+                <option value="expense_base">Expense Base</option>
             </select>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Expense Category -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expense Category</label>
-            <select wire:model.live="expenseCategoryId"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">All Categories</option>
-                @foreach($expenseCategories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
+    <!-- Conditional Fields -->
+    @if($reportType === 'customer_base')
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Company Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Company</label>
+                <select wire:model="companyName"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">All Companies</option>
+                    @foreach($companyNames as $company)
+                        <option value="{{ $company }}">{{ $company }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
+    @endif
 
-        <!-- Expense Type -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expense Type</label>
-            <select wire:model.live="expenseType"
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">All Types</option>
-                <option value="general">General</option>
-                <option value="transport">Transport</option>
-            </select>
+    @if($reportType === 'expense_base')
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Expense Category -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expense Category</label>
+                <select wire:model="expenseCategoryId"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">All Categories</option>
+                    @foreach($expenseCategories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
+    @endif
+
+    <!-- Submit Button -->
+    <div class="flex justify-end">
+        <button wire:click="submitReport" 
+                wire:loading.attr="disabled"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+            <span wire:loading.remove wire:target="submitReport">Generate Report</span>
+            <span wire:loading wire:target="submitReport">Generating...</span>
+        </button>
     </div>
 </div>

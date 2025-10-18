@@ -6,9 +6,8 @@ use Filament\Pages\Page;
 use App\Models\Order;
 use App\Models\Expense;
 use App\Models\Branch;
-use App\Models\Driver;
-use App\Models\Vehicle;
 use App\Models\Customer;
+use App\Models\ExpenseCategory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 
@@ -22,11 +21,10 @@ class Reports extends Page
 
     public $startDate;
     public $endDate;
-    public $reportType = 'profit_loss';
+    public $reportType = 'customer_base';
     public $branchId;
-    public $driverId;
-    public $vehicleId;
-    public $customerId;
+    public $companyName;
+    public $expenseCategoryId;
     
     public $reportData = [];
     public $insights = [];
@@ -40,19 +38,18 @@ class Reports extends Page
     protected function getListeners()
     {
         return [
-            'filtersUpdated' => 'updateFilters',
+            'generateReport' => 'handleGenerateReport',
         ];
     }
 
-    public function updateFilters($filters)
+    public function handleGenerateReport($filters)
     {
         $this->startDate = \Carbon\Carbon::parse($filters['startDate']);
         $this->endDate = \Carbon\Carbon::parse($filters['endDate']);
         $this->reportType = $filters['reportType'];
         $this->branchId = $filters['branchId'];
-        $this->driverId = $filters['driverId'];
-        $this->vehicleId = $filters['vehicleId'];
-        $this->customerId = $filters['customerId'];
+        $this->companyName = $filters['companyName'];
+        $this->expenseCategoryId = $filters['expenseCategoryId'];
         
         $this->generateReport();
     }
@@ -67,122 +64,44 @@ class Reports extends Page
         $this->insights = [];
 
         switch ($this->reportType) {
-            case 'profit_loss':
-                $this->generateProfitLossReport();
+            case 'customer_base':
+                $this->generateCustomerBaseReport();
                 break;
-            case 'monthly_sales':
-                $this->generateMonthlySalesReport();
-                break;
-            case 'expense_driver':
-                $this->generateExpenseDriverReport();
-                break;
-            case 'expense_vehicle':
-                $this->generateExpenseVehicleReport();
-                break;
-            case 'customer_statements':
-                $this->generateCustomerStatementsReport();
-                break;
-            case 'all_expenses':
-                $this->generateAllExpensesReport();
+            case 'expense_base':
+                $this->generateExpenseBaseReport();
                 break;
         }
     }
 
-    private function generateProfitLossReport()
-    {
-        $ordersQuery = Order::whereBetween('order_date', [$this->startDate, $this->endDate]);
-        $expensesQuery = Expense::whereBetween('expense_date', [$this->startDate, $this->endDate]);
-
-        if ($this->branchId) {
-            $ordersQuery->where('branch_id', $this->branchId);
-            $expensesQuery->where('branch_id', $this->branchId);
-        }
-
-        $totalRevenue = $ordersQuery->sum('total_price');
-        $totalExpenses = $expensesQuery->sum('amount');
-        $profit = $totalRevenue - $totalExpenses;
-
-        $this->reportData = [
-            'total_revenue' => $totalRevenue,
-            'total_expenses' => $totalExpenses,
-            'profit' => $profit,
-            'profit_margin' => $totalRevenue > 0 ? ($profit / $totalRevenue) * 100 : 0,
-            'order_count' => $ordersQuery->count(),
-            'expense_count' => $expensesQuery->count()
-        ];
-    }
-
-    private function generateMonthlySalesReport()
-    {
-        $query = Order::whereBetween('order_date', [$this->startDate, $this->endDate]);
-
-        if ($this->branchId) {
-            $query->where('branch_id', $this->branchId);
-        }
-
-        $sales = $query->selectRaw('DATE(order_date) as date, SUM(total_price) as total, COUNT(*) as orders')
-                       ->groupBy('date')
-                       ->orderBy('date')
-                       ->get();
-
-        $this->reportData = $sales;
-    }
-
-    private function generateExpenseDriverReport()
-    {
-        $query = Expense::with(['driver', 'category', 'branch'])
-                        ->whereBetween('expense_date', [$this->startDate, $this->endDate]);
-
-        if ($this->branchId) {
-            $query->where('branch_id', $this->branchId);
-        }
-
-        if ($this->driverId) {
-            $query->where('driver_id', $this->driverId);
-        }
-
-        $expenses = $query->get();
-
-        $this->reportData = $expenses;
-    }
-
-    private function generateExpenseVehicleReport()
-    {
-        $query = Expense::with(['vehicle', 'category', 'branch'])
-                        ->whereBetween('expense_date', [$this->startDate, $this->endDate]);
-
-        if ($this->branchId) {
-            $query->where('branch_id', $this->branchId);
-        }
-
-        if ($this->vehicleId) {
-            $query->where('vehicle_id', $this->vehicleId);
-        }
-
-        $expenses = $query->get();
-
-        $this->reportData = $expenses;
-    }
-
-    private function generateCustomerStatementsReport()
+    private function generateCustomerBaseReport()
     {
         $query = Order::with(['customer', 'branch'])
-                      ->whereBetween('order_date', [$this->startDate, $this->endDate]);
+                      ->whereBetween('order_date', [$this->startDate, $this->endDate])
+                      ->where('payment_type', 'credit'); // Only credit/pending payments
 
         if ($this->branchId) {
             $query->where('branch_id', $this->branchId);
         }
 
-        if ($this->customerId) {
-            $query->where('customer_id', $this->customerId);
+        if ($this->companyName) {
+            // Get all customers with this company name
+            $customerIds = Customer::where('company_name', $this->companyName)->pluck('id');
+            $query->whereIn('customer_id', $customerIds);
         }
 
         $orders = $query->orderBy('order_date', 'desc')->get();
 
+        // Calculate insights
+        $this->insights = [
+            'total_orders' => $orders->count(),
+            'total_amount' => $orders->sum('total_price'),
+            'company_name' => $this->companyName ?: 'All Companies',
+        ];
+
         $this->reportData = $orders;
     }
 
-    private function generateAllExpensesReport()
+    private function generateExpenseBaseReport()
     {
         $query = Expense::with(['category', 'branch', 'user'])
                         ->whereBetween('expense_date', [$this->startDate, $this->endDate]);
@@ -191,7 +110,20 @@ class Reports extends Page
             $query->where('branch_id', $this->branchId);
         }
 
+        if ($this->expenseCategoryId) {
+            $query->where('expense_category_id', $this->expenseCategoryId);
+        }
+
         $expenses = $query->orderBy('expense_date', 'desc')->get();
+
+        // Calculate insights
+        $this->insights = [
+            'total_expenses' => $expenses->count(),
+            'total_amount' => $expenses->sum('amount'),
+            'category_name' => $this->expenseCategoryId 
+                ? ExpenseCategory::find($this->expenseCategoryId)?->name 
+                : 'All Categories',
+        ];
 
         $this->reportData = $expenses;
     }
@@ -209,24 +141,27 @@ class Reports extends Page
             $file = fopen('php://output', 'w');
             
             switch ($this->reportType) {
-                case 'customer_statements':
-                    fputcsv($file, ['Order ID', 'Date', 'Customer', 'Company', 'Vehicle', 'Driver', 'Product Type', 'Amount', 'Payment Type']);
+                case 'customer_base':
+                    fputcsv($file, ['Order ID', 'Date', 'Company', 'Customer', 'Vehicle', 'Driver', 'Product Type', 'Quantity', 'Amount', 'Payment Type', 'Branch']);
                     foreach ($this->reportData as $order) {
                         fputcsv($file, [
                             $order->id,
-                            $order->order_date,
-                            $order->customer->first_name . ' ' . $order->customer->last_name,
+                            \Carbon\Carbon::parse($order->order_date)->format('Y-m-d'),
                             $order->company_name,
+                            $order->customer_name,
                             $order->vehicle_number,
                             $order->driver_name,
-                            $order->product_type,
+                            $order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water',
+                            $order->quantity,
                             $order->total_price,
-                            $order->payment_type
+                            ucfirst($order->payment_type),
+                            $order->branch?->name ?? 'N/A'
                         ]);
                     }
                     break;
-                case 'all_expenses':
-                    fputcsv($file, ['ID', 'Date', 'Title', 'Category', 'Branch', 'Amount', 'Payment Method', 'Approved']);
+                    
+                case 'expense_base':
+                    fputcsv($file, ['ID', 'Date', 'Title', 'Category', 'Branch', 'Amount', 'Payment Method', 'Approved', 'Created By']);
                     foreach ($this->reportData as $expense) {
                         fputcsv($file, [
                             $expense->id,
@@ -235,17 +170,38 @@ class Reports extends Page
                             $expense->category?->name ?? 'N/A',
                             $expense->branch?->name ?? 'N/A',
                             $expense->amount,
-                            $expense->payment_method,
-                            $expense->is_approved ? 'Yes' : 'No'
+                            ucfirst(str_replace('_', ' ', $expense->payment_method)),
+                            $expense->is_approved ? 'Yes' : 'No',
+                            $expense->user?->name ?? 'N/A'
                         ]);
                     }
                     break;
-                // Add more export cases as needed
             }
             
             fclose($file);
         };
 
         return Response::stream($callback, 200, $headers);
+    }
+
+    public function downloadStatement()
+    {
+        if (!$this->companyName) {
+            return;
+        }
+
+        // Get all customer IDs with this company name
+        $customerIds = Customer::where('company_name', $this->companyName)->pluck('id');
+        
+        if ($customerIds->isEmpty()) {
+            return;
+        }
+
+        // Redirect to statement download route
+        return redirect()->to(
+            url('/download-statement-by-company/' . urlencode($this->companyName) 
+                . '?start_date=' . $this->startDate->format('Y-m-d') 
+                . '&end_date=' . $this->endDate->format('Y-m-d'))
+        );
     }
 }

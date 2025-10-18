@@ -122,6 +122,46 @@ class UtilityController extends Controller
         return $mpdf->Output('invoice-'.$order_id.'.pdf', 'I');
     }
 
+    public function downloadStatementByCompany($company_name, Request $request)
+    {
+        $company_name = urldecode($company_name);
+        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
+        
+        // Get all customer IDs with this company name
+        $customerIds = Customer::where('company_name', $company_name)->pluck('id');
+        
+        if ($customerIds->isEmpty()) {
+            abort(404, 'No customers found with this company name.');
+        }
+        
+        // Get orders with payment_type = 'credit' (or 'on_account' for pending payments)
+        $orders = Order::whereIn('customer_id', $customerIds)
+            ->where('payment_type', 'credit')
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->orderBy('order_date', 'desc')
+            ->get();
+        
+        $data = [
+            'company_name' => $company_name,
+            'orders' => $orders,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'totalAmount' => $orders->sum('total_price'),
+        ];
+
+        $html = view('invoices.company-statement', $data)->render();
+
+        $mpdf = new Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+        ]);
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('statement-'.str_replace(' ', '-', $company_name).'.pdf', 'I');
+    }
+
     public function downloadLedger(Request $request)
     {
         $customer_id = $request->get('customer_id');

@@ -34,14 +34,14 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Grid::make(2)
-                    ->schema([
-                        TextInput::make('first_name')
-                            ->required()
-                            ->maxLength(20),
-                        TextInput::make('last_name')
-                            ->maxLength(20),
-                    ]),
+                // Grid::make(2)
+                //     ->schema([
+                //         TextInput::make('first_name')
+                //             ->required()
+                //             ->maxLength(20),
+                //         TextInput::make('last_name')
+                //             ->maxLength(20),
+                //     ]),
                 Grid::make(2)
                     ->schema([
                         TextInput::make('email')
@@ -71,7 +71,7 @@ class CustomerResource extends Resource
                 Grid::make(2)
                     ->schema([
                         TextInput::make('company_name')
-                            ->label('Company Name')
+                            ->label('Transport Name')
                             ->nullable(),
                         TextInput::make('tanker_size')
                             ->label('Tanker Size')
@@ -118,9 +118,9 @@ class CustomerResource extends Resource
 
         return $table
             ->columns([
-                TextColumn::make('first_name')->sortable()->searchable(),
-                TextColumn::make('last_name')->searchable(),
-                TextColumn::make('company_name')->searchable(),
+                // TextColumn::make('first_name')->sortable()->searchable(),
+                // TextColumn::make('last_name')->searchable(),
+                TextColumn::make('company_name')->label('Transport Name')->searchable(),
                 TextColumn::make('vehicle.vehicle_number')
                     ->label('Vehicle')
                     ->searchable(),
