@@ -136,7 +136,7 @@
 <div class="invoice-container">
     <!-- Header Section -->
     <div class="header">
-        <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
+        <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo" style="width: 200px; height: 200px; object-fit: contain;">
         <div class="company-info">
             <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
             <h2>REEM AL FALAJ CONST. WATER TR</h2>
@@ -210,7 +210,7 @@
 
     <!-- Stamp -->
     <div class="stamp">
-        <img src="{{asset('invoice-img/stamp.png')}}" alt="Company Stamp">
+        <img src="{{asset('invoice-img/stamp.png')}}" alt="Company Stamp" style="width: 200px; height: 200px; object-fit: contain;">
     </div>
 </div>
 
