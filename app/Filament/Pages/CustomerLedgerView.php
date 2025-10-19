@@ -26,7 +26,7 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
     protected static ?string $navigationLabel = 'Customer Ledger';
     protected static string $view = 'filament.pages.customer-ledger-view';
     protected static ?string $title = 'Customer Ledger';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 12;
 
     public Collection $ledgerEntries;
     public ?Customer $customer = null;
@@ -41,7 +41,10 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
     public function mount(): void
     {
         $this->ledgerEntries = collect([]);
-        $this->form->fill();
+        $this->form->fill([
+            'from_date' => now()->startOfMonth()->format('Y-m-d'),
+            'to_date' => now()->format('Y-m-d'),
+        ]);
     }
 
     public function form(Form $form): Form
@@ -64,15 +67,27 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
                             })
                             ->searchable()
                             ->required()
-                            ->placeholder('Select a customer'),
+                            ->placeholder('Select a customer')
+                            ->live()
+                            ->afterStateUpdated(function () {
+                                $this->refreshLedgerData();
+                            }),
                         
                         DatePicker::make('from_date')
                             ->label('From Date')
-                            ->placeholder('Select start date'),
+                            ->default(now()->startOfMonth())
+                            ->live()
+                            ->afterStateUpdated(function () {
+                                $this->refreshLedgerData();
+                            }),
                         
                         DatePicker::make('to_date')
                             ->label('To Date')
-                            ->placeholder('Select end date'),
+                            ->default(now())
+                            ->live()
+                            ->afterStateUpdated(function () {
+                                $this->refreshLedgerData();
+                            }),
                     ])->columns(3),
             ])
             ->statePath('data');
