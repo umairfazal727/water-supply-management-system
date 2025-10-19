@@ -84,7 +84,7 @@ class Reports extends Page
         }
 
         if ($this->companyName) {
-            // Get all customers with this company name (trim and match exactly)
+            // Get all customers with this company name (trim and case-insensitive match)
             $trimmedCompanyName = trim($this->companyName);
             $customerIds = Customer::whereRaw('TRIM(company_name) = ?', [$trimmedCompanyName])
                 ->pluck('id');

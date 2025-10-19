@@ -50,33 +50,27 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
                     ->schema([
                         Select::make('customer_id')
                             ->label('Select Customer')
-                            ->options(Customer::all()->pluck('first_name', 'id'))
+                            ->options(function () {
+                                return Customer::with(['driver', 'vehicle'])
+                                    ->get()
+                                    ->mapWithKeys(function ($customer) {
+                                        $label = ($customer->company_name ?: 'N/A') . ' - ' . 
+                                                ($customer->driver?->name ?: 'N/A') . ' - ' . 
+                                                ($customer->vehicle?->vehicle_number ?: 'N/A');
+                                        return [$customer->id => $label];
+                                    });
+                            })
                             ->searchable()
-                            ->live()
-                            ->loadingMessage('Loading customer data...')
-                            ->afterStateUpdated(function () {
-                                $this->isLoading = true;
-                                $this->loadLedgerData();
-                                $this->isLoading = false;
-                            }),
+                            ->required()
+                            ->placeholder('Select a customer'),
                         
                         DatePicker::make('from_date')
                             ->label('From Date')
-                            ->live()
-                            ->afterStateUpdated(function () {
-                                $this->isLoading = true;
-                                $this->loadLedgerData();
-                                $this->isLoading = false;
-                            }),
+                            ->placeholder('Select start date'),
                         
                         DatePicker::make('to_date')
                             ->label('To Date')
-                            ->live()
-                            ->afterStateUpdated(function () {
-                                $this->isLoading = true;
-                                $this->loadLedgerData();
-                                $this->isLoading = false;
-                            }),
+                            ->placeholder('Select end date'),
                     ])->columns(3),
             ])
             ->statePath('data');
@@ -145,10 +139,11 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('load_ledger')
-                ->label('Load Ledger Data')
-                ->icon('heroicon-o-magnifying-glass')
+            Action::make('generate_ledger')
+                ->label('Generate Ledger')
+                ->icon('heroicon-o-document-chart-bar')
                 ->color('primary')
+                ->size('lg')
                 ->action('refreshLedgerData')
                 ->visible(function () {
                     try {
@@ -157,19 +152,20 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
                     } catch (\Exception $e) {
                         return false;
                     }
-                }),
+                })
+                ->requiresConfirmation(false),
             
-            Action::make('download_ledger')
-                ->label('Download PDF')
+            Action::make('export_pdf')
+                ->label('Export PDF')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
                 ->visible(fn () => $this->customer && $this->ledgerEntries->count() > 0)
                 ->url(function () {
                     $data = $this->form->getState();
-                    return route('download-ledger', [
+                    return url('/download-ledger', [
                         'customer_id' => $data['customer_id'],
-                        'from' => $data['from_date'],
-                        'to' => $data['to_date']
+                        'from' => $data['from_date'] ?? '',
+                        'to' => $data['to_date'] ?? ''
                     ]);
                 })
                 ->openUrlInNewTab(),

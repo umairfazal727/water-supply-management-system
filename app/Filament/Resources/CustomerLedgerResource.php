@@ -43,7 +43,16 @@ class CustomerLedgerResource extends Resource
                     ->schema([
                         Select::make('customer_id')
                             ->label('Customer')
-                            ->options(Customer::all()->pluck('first_name', 'id'))
+                            ->options(function () {
+                                return Customer::with(['driver', 'vehicle'])
+                                    ->get()
+                                    ->mapWithKeys(function ($customer) {
+                                        $label = ($customer->company_name ?: 'N/A') . ' - ' . 
+                                                ($customer->driver?->name ?: 'N/A') . ' - ' . 
+                                                ($customer->vehicle?->vehicle_number ?: 'N/A');
+                                        return [$customer->id => $label];
+                                    });
+                            })
                             ->required()
                             ->searchable()
                             ->preload(),
@@ -125,8 +134,17 @@ class CustomerLedgerResource extends Resource
                     ->label('Entry Origin')
                     ->searchable(),
                 
-                TextColumn::make('customer.first_name')
+                TextColumn::make('customer.company_name')
                     ->label('Customer')
+                    ->formatStateUsing(function ($record) {
+                        $customer = $record->customer;
+                        if ($customer) {
+                            return ($customer->company_name ?: 'N/A') . ' - ' . 
+                                   ($customer->driver?->name ?: 'N/A') . ' - ' . 
+                                   ($customer->vehicle?->vehicle_number ?: 'N/A');
+                        }
+                        return 'N/A';
+                    })
                     ->searchable()
                     ->sortable(),
                 
@@ -173,7 +191,16 @@ class CustomerLedgerResource extends Resource
             ->filters([
                 SelectFilter::make('customer_id')
                     ->label('Customer')
-                    ->options(Customer::all()->pluck('first_name', 'id'))
+                    ->options(function () {
+                        return Customer::with(['driver', 'vehicle'])
+                            ->get()
+                            ->mapWithKeys(function ($customer) {
+                                $label = ($customer->company_name ?: 'N/A') . ' - ' . 
+                                        ($customer->driver?->name ?: 'N/A') . ' - ' . 
+                                        ($customer->vehicle?->vehicle_number ?: 'N/A');
+                                return [$customer->id => $label];
+                            });
+                    })
                     ->searchable(),
                 
                 SelectFilter::make('transaction_type')
