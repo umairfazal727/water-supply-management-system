@@ -43,10 +43,10 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('customer.first_name')
-                            ->label('Customer Name')
-                            ->searchable()
-                            ->formatStateUsing(fn ($record) => $record->customer->first_name . ' ' . $record->customer->last_name),
+                // TextColumn::make('customer.first_name')
+                //             ->label('Customer Name')
+                //             ->searchable()
+                //             ->formatStateUsing(fn ($record) => $record->customer->first_name . ' ' . $record->customer->last_name),
                 TextColumn::make('vehicle_number')
                             ->label('Vehicle')
                             ->searchable(),
@@ -56,6 +56,8 @@ class OrderResource extends Resource
                 TextColumn::make('company_name')
                             ->label('Company')
                             ->searchable(),
+                TextColumn::make('branch.name')
+                            ->label('Branch'),
                 BadgeColumn::make('product_type')
                             ->label('Product')
                             ->colors([

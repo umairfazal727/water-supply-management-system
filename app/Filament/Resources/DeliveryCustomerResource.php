@@ -62,6 +62,34 @@ class DeliveryCustomerResource extends Resource
                             ->label('Active')
                             ->default(true),
                     ])->columns(2),
+                
+                Forms\Components\Section::make('Pricing Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('rate')
+                            ->numeric()
+                            ->default(0.00)
+                            ->prefix('AED')
+                            ->step(0.01)
+                            ->label('Rate'),
+                        Forms\Components\TextInput::make('sweet_water_price')
+                            ->numeric()
+                            ->default(0.00)
+                            ->prefix('AED')
+                            ->step(0.01)
+                            ->label('Sweet Water Price'),
+                        Forms\Components\TextInput::make('salt_water_price')
+                            ->numeric()
+                            ->default(0.00)
+                            ->prefix('AED')
+                            ->step(0.01)
+                            ->label('Salt Water Price'),
+                        Forms\Components\TextInput::make('drinking_water_price')
+                            ->numeric()
+                            ->default(0.00)
+                            ->prefix('AED')
+                            ->step(0.01)
+                            ->label('Drinking Water Price'),
+                    ])->columns(2),
             ]);
     }
 
@@ -86,6 +114,25 @@ class DeliveryCustomerResource extends Resource
                 Tables\Columns\TextColumn::make('opening_balance')
                     ->money($currency_symbol)
                     ->sortable(),
+                Tables\Columns\TextColumn::make('rate')
+                    ->money($currency_symbol)
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('sweet_water_price')
+                    ->money($currency_symbol)
+                    ->sortable()
+                    ->toggleable()
+                    ->label('Sweet Water'),
+                Tables\Columns\TextColumn::make('salt_water_price')
+                    ->money($currency_symbol)
+                    ->sortable()
+                    ->toggleable()
+                    ->label('Salt Water'),
+                Tables\Columns\TextColumn::make('drinking_water_price')
+                    ->money($currency_symbol)
+                    ->sortable()
+                    ->toggleable()
+                    ->label('Drinking Water'),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')

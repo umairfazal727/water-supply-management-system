@@ -51,23 +51,15 @@ class DeliveryResource extends Resource
                     ->required()
                     ->default(now()),
                 Forms\Components\TimePicker::make('delivery_time')
-                    ->required()
                     ->default(now()),
                 Forms\Components\TextInput::make('customer_site')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('customer_location')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('trip_size')
                     ->required()
                     ->numeric()
                     ->suffix('gallons/liters'),
-                Forms\Components\TextInput::make('rate_per_gallon')
-                    ->required()
-                    ->numeric()
-                    ->prefix('SAR')
-                    ->step(0.01),
                 Forms\Components\TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -97,9 +89,6 @@ class DeliveryResource extends Resource
                     ->multiple()
                     ->directory('delivery-photos')
                     ->visibility('private'),
-                Forms\Components\DateTimePicker::make('delivered_at')
-                    ->default(now()->format('Y-m-d H:i'))
-                    ->label('Delivered At'),
             ]);
     }
 
@@ -149,10 +138,6 @@ class DeliveryResource extends Resource
                 Tables\Columns\TextColumn::make('branch.name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('delivered_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

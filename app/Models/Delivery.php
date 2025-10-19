@@ -21,22 +21,18 @@ class Delivery extends Model
         'customer_site',
         'customer_location',
         'trip_size',
-        'rate_per_gallon',
         'total_amount',
         'payment_method',
         'status',
         'notes',
         'delivery_photos',
-        'delivered_at',
     ];
 
     protected $casts = [
         'delivery_date' => 'date',
         'delivery_time' => 'datetime:H:i',
-        'rate_per_gallon' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'delivery_photos' => 'array',
-        'delivered_at' => 'datetime',
     ];
 
     // Relationships
