@@ -156,12 +156,6 @@ class CustomerResource extends Resource
             ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('view_ledger')
-                    ->label('View Ledger')
-                    ->icon('heroicon-o-document-text')
-                    ->color('primary')
-                    ->url(fn ($record) => route('filament.admin.pages.customer-ledger-view', ['customer_id' => $record->id]))
-                    ->openUrlInNewTab(),
                 Tables\Actions\Action::make('add_payment')
                     ->label('Add Payment')
                     ->icon('heroicon-o-plus-circle')
