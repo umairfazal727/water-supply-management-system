@@ -30,7 +30,7 @@ class LedgerOverviewWidget extends BaseWidget
         return $table
             ->query(
                 Ledger::query()
-                    ->with(['customer.driver', 'customer.vehicle', 'order'])
+                    ->with(['customer.driver', 'customer.vehicle', 'order.branch'])
                     ->latest('transaction_date')
                     ->latest('id')
             )
@@ -64,6 +64,19 @@ class LedgerOverviewWidget extends BaseWidget
                     ->searchable()
                     ->sortable()
                     ->wrap(),
+                
+                Tables\Columns\TextColumn::make('order.branch.name')
+                    ->label('Branch')
+                    ->formatStateUsing(function ($record) {
+                        // Only show branch if transaction is from an order
+                        if ($record->transaction_type === 'order' && $record->order) {
+                            return $record->order->branch?->name ?: 'N/A';
+                        }
+                        return '-';
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 
                 Tables\Columns\TextColumn::make('transaction_type')
                     ->badge()
@@ -205,7 +218,7 @@ class LedgerOverviewWidget extends BaseWidget
 
     protected function exportToCsv()
     {
-        $ledgers = Ledger::with(['customer.driver', 'customer.vehicle'])
+        $ledgers = Ledger::with(['customer.driver', 'customer.vehicle', 'order.branch'])
             ->orderBy('transaction_date', 'desc')
             ->orderBy('id', 'desc')
             ->get();
@@ -247,6 +260,7 @@ class LedgerOverviewWidget extends BaseWidget
                 'Customer',
                 'Driver',
                 'Vehicle',
+                'Branch',
                 'Type',
                 'Debit',
                 'Credit',
@@ -256,6 +270,12 @@ class LedgerOverviewWidget extends BaseWidget
             
             // Add data rows
             foreach ($ledgers as $ledger) {
+                // Get branch name (only for orders)
+                $branchName = '-';
+                if ($ledger->transaction_type === 'order' && $ledger->order) {
+                    $branchName = $ledger->order->branch?->name ?: 'N/A';
+                }
+                
                 fputcsv($file, [
                     $ledger->entry_number,
                     $ledger->transaction_date?->format('d-m-Y'),
@@ -263,6 +283,7 @@ class LedgerOverviewWidget extends BaseWidget
                     $ledger->customer?->company_name ?: 'N/A',
                     $ledger->customer?->driver?->name ?: 'N/A',
                     $ledger->customer?->vehicle?->vehicle_number ?: 'N/A',
+                    $branchName,
                     $ledger->transaction_type,
                     number_format($ledger->debit_amount, 2),
                     number_format($ledger->credit_amount, 2),
@@ -279,7 +300,7 @@ class LedgerOverviewWidget extends BaseWidget
 
     protected function exportToPdf()
     {
-        $ledgers = Ledger::with(['customer.driver', 'customer.vehicle'])
+        $ledgers = Ledger::with(['customer.driver', 'customer.vehicle', 'order.branch'])
             ->orderBy('transaction_date', 'desc')
             ->orderBy('id', 'desc')
             ->get();

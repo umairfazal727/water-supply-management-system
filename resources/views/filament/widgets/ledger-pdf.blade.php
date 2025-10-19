@@ -193,6 +193,7 @@
                 <th>Customer</th>
                 <th>Driver</th>
                 <th>Vehicle</th>
+                <th>Branch</th>
                 <th>Type</th>
                 <th class="text-right">Debit</th>
                 <th class="text-right">Credit</th>
@@ -208,6 +209,13 @@
                 <td>{{ $ledger->customer?->company_name ?: 'N/A' }}</td>
                 <td>{{ $ledger->customer?->driver?->name ?: 'N/A' }}</td>
                 <td>{{ $ledger->customer?->vehicle?->vehicle_number ?: 'N/A' }}</td>
+                <td>
+                    @if($ledger->transaction_type === 'order' && $ledger->order)
+                        {{ $ledger->order->branch?->name ?: 'N/A' }}
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>
                     <span class="badge badge-{{ 
                         $ledger->transaction_type === 'order' ? 'success' : 
@@ -229,7 +237,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="10" class="text-center">No ledger entries found</td>
+                <td colspan="11" class="text-center">No ledger entries found</td>
             </tr>
             @endforelse
         </tbody>
