@@ -27,7 +27,7 @@ Route::get('/print/{id}',  [UtilityController::class, 'print']);
 Route::get('/download-statement/{customer_id}',  [UtilityController::class, 'downloadStatement'])->middleware('auth');
 Route::get('/download-statement-by-company/{company_name}',  [UtilityController::class, 'downloadStatementByCompany'])->middleware('auth');
 Route::get('/download-invoice/{order_id}',  [UtilityController::class, 'downloadInvoice'])->middleware('auth');
-Route::get('/download-ledger',  [UtilityController::class, 'downloadLedger'])->middleware('auth');
+Route::get('/download-ledger',  [UtilityController::class, 'downloadLedger'])->middleware('auth')->name('download-ledger');
 Route::get('/login',  function(){
     return redirect( url('/admin') );
 })->name('login');

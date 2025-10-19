@@ -155,38 +155,39 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
 
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('generate_ledger')
-                ->label('Generate Ledger')
-                ->icon('heroicon-o-document-chart-bar')
-                ->color('primary')
-                ->size('lg')
-                ->action('refreshLedgerData')
-                ->visible(function () {
-                    try {
-                        $state = $this->form->getState();
-                        return !empty($state['customer_id']);
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-                })
-                ->requiresConfirmation(false),
+        return [];
+        // return [
+        //     Action::make('generate_ledger')
+        //         ->label('Generate Ledger')
+        //         ->icon('heroicon-o-document-chart-bar')
+        //         ->color('primary')
+        //         ->size('lg')
+        //         ->action('refreshLedgerData')
+        //         ->visible(function () {
+        //             try {
+        //                 $state = $this->form->getState();
+        //                 return !empty($state['customer_id']);
+        //             } catch (\Exception $e) {
+        //                 return false;
+        //             }
+        //         })
+        //         ->requiresConfirmation(false),
             
-            Action::make('export_pdf')
-                ->label('Export PDF')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('success')
-                ->visible(fn () => $this->customer && $this->ledgerEntries->count() > 0)
-                ->url(function () {
-                    $data = $this->form->getState();
-                    return url('/download-ledger', [
-                        'customer_id' => $data['customer_id'],
-                        'from' => $data['from_date'] ?? '',
-                        'to' => $data['to_date'] ?? ''
-                    ]);
-                })
-                ->openUrlInNewTab(),
-        ];
+        //     Action::make('export_pdf')
+        //         ->label('Export PDF')
+        //         ->icon('heroicon-o-arrow-down-tray')
+        //         ->color('success')
+        //         ->visible(fn () => $this->customer && $this->ledgerEntries->count() > 0)
+        //         ->url(function () {
+        //             $data = $this->form->getState();
+        //             return url('/download-ledger', [
+        //                 'customer_id' => $data['customer_id'],
+        //                 'from' => $data['from_date'] ?? '',
+        //                 'to' => $data['to_date'] ?? ''
+        //             ]);
+        //         })
+        //         ->openUrlInNewTab(),
+        // ];
     }
 
     public function getMaxContentWidth(): MaxWidth

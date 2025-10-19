@@ -33,10 +33,11 @@
                             </div>
                             @php
                                 $customerId = $data['customer_id'] ?? null;
-                                $fromDate = $data['from_date'] ?? null;
-                                $toDate = $data['to_date'] ?? null;
+                                $fromDate = $data['from_date'] ?? '';
+                                $toDate = $data['to_date'] ?? '';
+                                $downloadUrl = url('/download-ledger') . '?customer_id=' . $customerId . '&from=' . $fromDate . '&to=' . $toDate;
                             @endphp
-                            <a href="{{ url('/download-ledger', ['customer_id' => $customerId, 'from' => $fromDate ?? '', 'to' => $toDate ?? '']) }}" 
+                            <a href="{{ $downloadUrl }}" 
                                target="_blank"
                                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
