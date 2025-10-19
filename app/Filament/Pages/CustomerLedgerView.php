@@ -35,6 +35,8 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
     public float $totalCredit = 0;
     public float $finalBalance = 0;
     public bool $isLoading = false;
+    
+    public ?array $data = [];
 
     public function mount(): void
     {
