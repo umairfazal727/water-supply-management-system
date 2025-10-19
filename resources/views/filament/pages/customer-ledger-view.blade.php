@@ -3,7 +3,13 @@
 
     <!-- Action Buttons -->
     <div class="mt-4 flex justify-end gap-3">
-        @if($this->form->getState()['customer_id'] ?? false)
+        @php
+            $customerId = $data['customer_id'] ?? null;
+            $fromDate = $data['from_date'] ?? null;
+            $toDate = $data['to_date'] ?? null;
+        @endphp
+
+        @if($customerId)
             <button wire:click="refreshLedgerData" 
                     type="button"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out">
@@ -15,7 +21,7 @@
         @endif
 
         @if($customer && $ledgerEntries->count() > 0)
-            <a href="{{ url('/download-ledger', ['customer_id' => $this->form->getState()['customer_id'], 'from' => $this->form->getState()['from_date'] ?? '', 'to' => $this->form->getState()['to_date'] ?? '']) }}" 
+            <a href="{{ url('/download-ledger', ['customer_id' => $customerId, 'from' => $fromDate ?? '', 'to' => $toDate ?? '']) }}" 
                target="_blank"
                class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-150 ease-in-out">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
