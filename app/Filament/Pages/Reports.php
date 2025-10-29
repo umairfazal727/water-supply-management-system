@@ -8,6 +8,8 @@ use App\Models\Expense;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\ExpenseCategory;
+use App\Models\Vehicle;
+use App\Models\Driver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 
@@ -24,6 +26,8 @@ class Reports extends Page
     public $reportType = 'customer_base';
     public $branchId;
     public $companyName;
+    public $vehicleId;
+    public $driverId;
     public $expenseCategoryId;
     
     public $reportData = [];
@@ -49,6 +53,8 @@ class Reports extends Page
         $this->reportType = $filters['reportType'];
         $this->branchId = $filters['branchId'];
         $this->companyName = $filters['companyName'];
+        $this->vehicleId = $filters['vehicleId'];
+        $this->driverId = $filters['driverId'];
         $this->expenseCategoryId = $filters['expenseCategoryId'];
         
         $this->generateReport();
@@ -94,6 +100,20 @@ class Reports extends Page
             } else {
                 // No customers found, return empty result
                 $query->whereRaw('1 = 0'); // This makes the query return no results
+            }
+        }
+
+        if ($this->vehicleId) {
+            $vehicle = Vehicle::find($this->vehicleId);
+            if ($vehicle) {
+                $query->where('vehicle_number', $vehicle->vehicle_number);
+            }
+        }
+
+        if ($this->driverId) {
+            $driver = Driver::find($this->driverId);
+            if ($driver) {
+                $query->where('driver_name', $driver->name);
             }
         }
 
@@ -169,7 +189,7 @@ class Reports extends Page
                     break;
                     
                 case 'expense_base':
-                    fputcsv($file, ['ID', 'Date', 'Title', 'Category', 'Branch', 'Amount', 'Payment Method', 'Approved', 'Created By']);
+                    fputcsv($file, ['ID', 'Date', 'Title', 'Category', 'Branch', 'Amount', 'Approved', 'Created By']);
                     foreach ($this->reportData as $expense) {
                         fputcsv($file, [
                             $expense->id,
@@ -178,7 +198,6 @@ class Reports extends Page
                             $expense->category?->name ?? 'N/A',
                             $expense->branch?->name ?? 'N/A',
                             $expense->amount,
-                            ucfirst(str_replace('_', ' ', $expense->payment_method)),
                             $expense->is_approved ? 'Yes' : 'No',
                             $expense->user?->name ?? 'N/A'
                         ]);

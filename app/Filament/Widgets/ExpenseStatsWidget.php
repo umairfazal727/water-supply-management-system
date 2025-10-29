@@ -57,11 +57,11 @@ class ExpenseStatsWidget extends BaseWidget
             $expenseGrowth = $lastMonthExpenses > 0 ? (($thisMonthExpenses - $lastMonthExpenses) / $lastMonthExpenses) * 100 : 0;
 
             // Today's Expenses Card
-            $stats[] = Stat::make($branch->name . ' - Today\'s Expenses', $currency_symbol . ' ' . number_format($todayExpenses, 2))
-                ->description('Expenses recorded today')
-                ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('danger')
-                ->chart([3, 5, 4, 6, 5, 7, 6]);
+            // $stats[] = Stat::make($branch->name . ' - Today\'s Expenses', $currency_symbol . ' ' . number_format($todayExpenses, 2))
+            //     ->description('Expenses recorded today')
+            //     ->descriptionIcon('heroicon-m-arrow-trending-up')
+            //     ->color('danger')
+            //     ->chart([3, 5, 4, 6, 5, 7, 6]);
 
             // Monthly Expenses Card
             $stats[] = Stat::make($branch->name . ' - Monthly Expenses', $currency_symbol . ' ' . number_format($thisMonthExpenses, 2))

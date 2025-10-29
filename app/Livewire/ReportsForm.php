@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\ExpenseCategory;
+use App\Models\Vehicle;
+use App\Models\Driver;
 use Illuminate\Support\Facades\DB;
 
 class ReportsForm extends Component
@@ -15,10 +17,14 @@ class ReportsForm extends Component
     public $reportType = 'customer_base';
     public $branchId;
     public $companyName;
+    public $vehicleId;
+    public $driverId;
     public $expenseCategoryId;
 
     public $branches = [];
     public $companyNames = [];
+    public $vehicles = [];
+    public $drivers = [];
     public $expenseCategories = [];
 
     public function mount()
@@ -42,6 +48,8 @@ class ReportsForm extends Component
             ->filter() // Remove any empty values
             ->values(); // Re-index array
         
+        $this->vehicles = Vehicle::where('is_active', true)->orderBy('vehicle_number')->get();
+        $this->drivers = Driver::where('is_active', true)->orderBy('name')->get();
         $this->expenseCategories = ExpenseCategory::all();
     }
 
@@ -49,6 +57,8 @@ class ReportsForm extends Component
     {
         // Reset conditional fields when report type changes
         $this->companyName = '';
+        $this->vehicleId = '';
+        $this->driverId = '';
         $this->expenseCategoryId = '';
     }
 
@@ -66,6 +76,8 @@ class ReportsForm extends Component
             'reportType' => $this->reportType,
             'branchId' => $this->branchId,
             'companyName' => $this->companyName,
+            'vehicleId' => $this->vehicleId,
+            'driverId' => $this->driverId,
             'expenseCategoryId' => $this->expenseCategoryId,
         ]);
     }

@@ -240,9 +240,9 @@
     <div class="footer">
         <p>Thanks & best regards<br>
         <strong>REEM AL FALAJ CONST. WATER TR</strong></p>
-        <div class="signature">
+        {{-- <div class="signature">
             <img src="{{asset('invoice-img/stamp.png')}}" alt="Company Stamp">
-        </div>
+        </div> --}}
     </div>
 </div>
 

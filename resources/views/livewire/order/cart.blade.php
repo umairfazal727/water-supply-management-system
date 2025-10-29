@@ -28,13 +28,13 @@
                     <div class="space-y-4">
                         <h4 class="font-medium text-gray-900 dark:text-white border-b pb-2">Customer & Vehicle Information</h4>
                         
-                        <div>
+                        {{-- <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Name</label>
                             <input type="text" 
                                    wire:model="customerName" 
                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                    readonly>
-                        </div>
+                        </div> --}}
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">

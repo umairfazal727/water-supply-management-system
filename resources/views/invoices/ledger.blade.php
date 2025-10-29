@@ -254,9 +254,9 @@
     </div>
 
     <!-- Stamp -->
-    <div class="stamp">
+    {{-- <div class="stamp">
         <img src="{{asset('invoice-img/stamp.png')}}" alt="Company Stamp" style="width: 150px; height: 150px; object-fit: contain;">
-    </div>
+    </div> --}}
 </div>
 
 </body>

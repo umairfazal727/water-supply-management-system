@@ -199,9 +199,9 @@
 
 
     <!-- Stamp -->
-    <div class="stamp">
+    {{-- <div class="stamp">
         <img src="{{asset('invoice-img/stamp.png')}}" alt="Company Stamp">
-    </div>
+    </div> --}}
 </div>
 
 </body>

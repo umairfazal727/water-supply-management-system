@@ -156,7 +156,7 @@
             <div class="flex space-x-4">
                 <button type="submit" 
                         wire:loading.attr="disabled"
-                        class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center">
+                        class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center">
                     <span wire:loading.remove wire:target="updateOrder">Update Order</span>
                     <span wire:loading wire:target="updateOrder" class="flex items-center">
                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

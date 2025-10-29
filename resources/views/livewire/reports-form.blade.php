@@ -43,7 +43,7 @@
 
     <!-- Conditional Fields -->
     @if($reportType === 'customer_base')
-        <div class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Company Name -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Company</label>
@@ -52,6 +52,30 @@
                     <option value="">All Companies</option>
                     @foreach($companyNames as $company)
                         <option value="{{ $company }}">{{ $company }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Vehicle -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Vehicle</label>
+                <select wire:model="vehicleId"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">All Vehicles</option>
+                    @foreach($vehicles as $vehicle)
+                        <option value="{{ $vehicle->id }}">{{ $vehicle->vehicle_number }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Driver -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Driver</label>
+                <select wire:model="driverId"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">All Drivers</option>
+                    @foreach($drivers as $driver)
+                        <option value="{{ $driver->id }}">{{ $driver->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -80,7 +104,7 @@
                 wire:loading.attr="disabled"
                 class="
                 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded
-                c disabled:opacity-50 disabled:cursor-not-allowed">
+                disabled:opacity-50 disabled:cursor-not-allowed">
             <span wire:loading.remove wire:target="submitReport">Generate Report</span>
             <span wire:loading wire:target="submitReport">Generating...</span>
         </button>
