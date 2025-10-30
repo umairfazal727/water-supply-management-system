@@ -26,6 +26,8 @@ class ExpenseResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $currency_symbol = config('settings.currency_symbol');
+
         return $form
             ->schema([
                 Forms\Components\Select::make('branch_id')
@@ -56,7 +58,7 @@ class ExpenseResource extends Resource
                 Forms\Components\TextInput::make('amount')
                     ->numeric()
                     ->required()
-                    ->prefix('$')
+                    ->prefix($currency_symbol)
                     ->step(0.01),
                 Forms\Components\DatePicker::make('expense_date')
                     ->required()

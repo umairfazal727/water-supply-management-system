@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\DatePicker;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -88,6 +89,13 @@ class OrderResource extends Resource
             ])
             ->defaultSort('id', 'desc')
             ->filters([
+                SelectFilter::make('branch_id')
+                    ->label('Branch')
+                    ->relationship('branch', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->indicator('Branches'),
                 Filter::make('created_at')
                 ->form([
                     DatePicker::make('start_date')
