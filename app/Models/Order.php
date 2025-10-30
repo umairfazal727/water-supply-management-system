@@ -34,7 +34,7 @@ class Order extends Model
                     'entry_origin' => 'ORDER-' . $order->id,
                     'debit_amount' => 0,
                     'credit_amount' => $order->price,
-                    'description' => "Order #{$order->id} - {$order->product_type} delivery - {$order->tanker_size} tanker",
+                    'description' => "Order #{$order->id} - {$order->product_type} - {$order->tanker_size} tanker",
                     'transaction_type' => 'order'
                 ]);
             }
