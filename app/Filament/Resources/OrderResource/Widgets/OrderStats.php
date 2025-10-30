@@ -22,40 +22,45 @@ class OrderStats extends BaseWidget
     {
         $currency_symbol = config('settings.currency_symbol');
 
-        // Base query respects active table filters (including Branch filter)
-        $baseQuery = $this->getPageTableQuery();
+        // Build a base 'today' filter
+        $todayBase = Order::query()->where(function ($query) {
+            $query->whereDate('order_date', today())
+                ->orWhere(function ($sub) {
+                    $sub->whereNull('order_date')
+                        ->whereDate('created_at', today());
+                });
+        });
 
-        // Limit to today's orders (order_date is today OR order_date null and created today)
-        $todayQuery = (clone $baseQuery)
-            ->where(function ($query) {
-                $query->whereDate('order_date', today())
-                    ->orWhere(function ($sub) {
-                        $sub->whereNull('order_date')
-                            ->whereDate('created_at', today());
-                    });
-            });
+        // Main Branch stats
+        $mainBranchQuery = (clone $todayBase)->whereHas('branch', function ($q) {
+            $q->where('name', 'Main Branch');
+        });
+        $mainOrdersCount = (clone $mainBranchQuery)->count();
+        $mainIncomeTotal = (clone $mainBranchQuery)->sum('total_price');
 
-        $todayOrdersCount = (clone $todayQuery)->count();
-        $todayIncomeTotal = (clone $todayQuery)->sum('total_price');
-        $todayCashTotal = (clone $todayQuery)->where('payment_type', 'cash')->sum('total_price');
-        $todayCreditTotal = (clone $todayQuery)->where('payment_type', 'credit')->sum('total_price');
+        // Branch 1 stats
+        $branch1Query = (clone $todayBase)->whereHas('branch', function ($q) {
+            $q->where('name', 'Branch 1');
+        });
+        $branch1OrdersCount = (clone $branch1Query)->count();
+        $branch1IncomeTotal = (clone $branch1Query)->sum('total_price');
 
         return [
-            Stat::make("Today's Orders", $todayOrdersCount)
-                ->description('Count of orders created today')
+            Stat::make('Main Branch - Orders', $mainOrdersCount)
+                ->description('Today')
                 ->color('primary'),
 
-            Stat::make("Today's Income", $currency_symbol . number_format((float) $todayIncomeTotal, 2))
-                ->description('Total income today')
+            Stat::make('Main Branch - Income', $currency_symbol . number_format((float) $mainIncomeTotal, 2))
+                ->description('Today')
                 ->color('success'),
 
-            Stat::make('Cash (Today)', $currency_symbol . number_format((float) $todayCashTotal, 2))
-                ->description('Cash-based sales today')
-                ->color('success'),
+            Stat::make('Branch 1 - Orders', $branch1OrdersCount)
+                ->description('Today')
+                ->color('primary'),
 
-            Stat::make('Credit (Today)', $currency_symbol . number_format((float) $todayCreditTotal, 2))
-                ->description('Credit-based sales today')
-                ->color('warning'),
+            Stat::make('Branch 1 - Income', $currency_symbol . number_format((float) $branch1IncomeTotal, 2))
+                ->description('Today')
+                ->color('success'),
         ];
     }
 
