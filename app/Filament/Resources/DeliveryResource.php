@@ -22,9 +22,10 @@ class DeliveryResource extends Resource
     protected static ?string $navigationGroup = 'Water Transport';
     
     protected static ?int $navigationSort = 1;
-
+    
     public static function form(Form $form): Form
     {
+        $currency_symbol = config('settings.currency_symbol');
         return $form
             ->schema([
                 Forms\Components\Select::make('branch_id')
@@ -59,11 +60,11 @@ class DeliveryResource extends Resource
                 Forms\Components\TextInput::make('trip_size')
                     ->required()
                     ->numeric()
-                    ->suffix('gallons/liters'),
+                    ->suffix('gallons'),
                 Forms\Components\TextInput::make('total_amount')
                     ->required()
                     ->numeric()
-                    ->prefix('SAR')
+                    ->prefix($currency_symbol)
                     ->step(0.01),
                 Forms\Components\Select::make('payment_method')
                     ->options([
@@ -94,6 +95,8 @@ class DeliveryResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $currency_symbol = config('settings.currency_symbol');
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('delivery_number')
@@ -117,8 +120,9 @@ class DeliveryResource extends Resource
                     ->suffix(' gal')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->money('SAR')
-                    ->sortable(),
+                    ->money($currency_symbol)
+                    ->sortable()
+                    ->label('Total Amount'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

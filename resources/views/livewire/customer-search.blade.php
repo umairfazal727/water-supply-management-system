@@ -10,6 +10,9 @@
     <!-- Customer List -->
     <div class="max-h-96 overflow-y-auto border border-gray-300 rounded-md">
         @if($customers->count() > 0)
+        @php
+            $currency_symbol = config('settings.currency_symbol');
+        @endphp
             @foreach($customers as $customer)
                 <div wire:click="selectCustomer({{ $customer->id }})"
                      class="p-3 border-b border-gray-200 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 {{ $selectedCustomer && $selectedCustomer->id === $customer->id ? 'bg-blue-100 dark:bg-blue-900' : '' }}">
@@ -47,7 +50,7 @@
                         </div>
                         <div class="text-right">
                             <div class="font-semibold text-green-600 dark:text-green-400">
-                                ${{ number_format($customer->price, 2) }}
+                                {{ $currency_symbol . number_format($customer->price, 2) }}
                             </div>
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $customer->product_type === 'sweet_water' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                 {{ $customer->product_type === 'sweet_water' ? 'Sweet' : 'Salt' }}

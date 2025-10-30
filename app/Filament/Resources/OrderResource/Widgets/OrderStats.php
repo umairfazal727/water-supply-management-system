@@ -3,12 +3,11 @@
 namespace App\Filament\Resources\OrderResource\Widgets;
 
 use App\Models\Order;
-use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
-use App\Models\Branch;
+ 
 
 class OrderStats extends BaseWidget
 {
@@ -21,35 +20,48 @@ class OrderStats extends BaseWidget
     }
     protected function getStats(): array
     {
-        $stats = [];
         $currency_symbol = config('settings.currency_symbol');
 
-        // Get Main Branch and Branch 1 only
-        $branches = Branch::whereIn('code', ['MAIN', 'BR1'])
-            ->where('is_active', true)
-            ->get();
+        // Base query respects active table filters (including Branch filter)
+        $baseQuery = $this->getPageTableQuery();
 
-        foreach ($branches as $branch) {
-            // Get today's orders for this branch
-            $todayOrders = Order::where('branch_id', $branch->id)
-                ->whereDate('order_date', today())
-                ->orWhere(function ($query) use ($branch) {
-                    $query->where('branch_id', $branch->id)
-                        ->whereNull('order_date')
-                        ->whereDate('created_at', today());
-                });
+        // Limit to today's orders (order_date is today OR order_date null and created today)
+        $todayQuery = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereDate('order_date', today())
+                    ->orWhere(function ($sub) {
+                        $sub->whereNull('order_date')
+                            ->whereDate('created_at', today());
+                    });
+            });
 
-            $todayOrdersCount = $todayOrders->count();
-            $todayOrdersTotal = $todayOrders->sum('price') ?? $todayOrders->sum('total_price');
+        $todayOrdersCount = (clone $todayQuery)->count();
+        $todayIncomeTotal = (clone $todayQuery)->sum('total_price');
+        $todayCashTotal = (clone $todayQuery)->where('payment_type', 'cash')->sum('total_price');
+        $todayCreditTotal = (clone $todayQuery)->where('payment_type', 'credit')->sum('total_price');
 
-            $stats[] = Stat::make($branch->name . ' - Today\'s Orders', $todayOrdersCount)
-                ->description('Total: ' . $currency_symbol . number_format($todayOrdersTotal, 2))
-                ->descriptionIcon('heroicon-m-shopping-cart')
-                ->color($branch->code === 'MAIN' ? 'primary' : 'success')
-                ->chart([7, 3, 4, 5, 6, 3, 5]);
-        }
+        return [
+            Stat::make("Today's Orders", $todayOrdersCount)
+                ->description('Count of orders created today')
+                ->color('primary'),
 
-        return $stats;
+            Stat::make("Today's Income", $currency_symbol . number_format((float) $todayIncomeTotal, 2))
+                ->description('Total income today')
+                ->color('success'),
+
+            Stat::make('Cash (Today)', $currency_symbol . number_format((float) $todayCashTotal, 2))
+                ->description('Cash-based sales today')
+                ->color('success'),
+
+            Stat::make('Credit (Today)', $currency_symbol . number_format((float) $todayCreditTotal, 2))
+                ->description('Credit-based sales today')
+                ->color('warning'),
+        ];
+    }
+
+    protected function getColumns(): int
+    {
+        return 4;
     }
     // protected function getStats(): array
     // {

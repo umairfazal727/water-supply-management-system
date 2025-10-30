@@ -172,7 +172,7 @@
                     <th>S.NO</th>
                     <th>INVOICE NUMBER</th>
                     <th>INVOICE DATE</th>
-                    <th>CUSTOMER/DRIVER</th>
+                    <th>DRIVER</th>
                     <th>VEHICLE</th>
                     <th>INVOICE AMOUNT</th>
                     <th>CURRENCY</th>
@@ -185,7 +185,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ str_pad($order->id, 3, '0', STR_PAD_LEFT) }}</td>
                     <td>{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y') }}</td>
-                    <td>{{ $order->customer_name }}</td>
+                    <td>{{ $order->driver_name }}</td>
                     <td>{{ $order->vehicle_number }}</td>
                     <td>{{ number_format($order->total_price, 2) }}</td>
                     <td>AED</td>
