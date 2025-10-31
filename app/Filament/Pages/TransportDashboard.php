@@ -42,8 +42,7 @@ class TransportDashboard extends Page
             ->whereDate('expense_date', $today)
             ->sum('amount');
 
-        $deliveriesQuery = Delivery::where('branch_id', $branchId)
-            ->whereDate('delivery_date', $today);
+        $deliveriesQuery = Delivery::whereDate('delivery_date', $today);
 
         $deliveries = (clone $deliveriesQuery)->count();
         $revenue = (clone $deliveriesQuery)->sum('total_amount');
