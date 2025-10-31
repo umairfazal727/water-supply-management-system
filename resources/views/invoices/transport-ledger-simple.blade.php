@@ -75,10 +75,10 @@
                 <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
             </td>
             <td class="phone-info">
-                <p style="margin: 0;">050 8426001</p>
-                <p style="margin: 0;">050 2549368</p>
-                <p style="margin: 0;">055 7466868</p>
-                <p style="margin: 0;">052 9349368</p>
+                <h3 style="margin: 0;">050 8426001</h3>
+                <h3 style="margin: 0;">050 2549368</h3>
+                <h3 style="margin: 0;">055 7466868</h3>
+                <h3 style="margin: 0;">052 9349368</h3>
             </td>
         </tr>
     </table>
