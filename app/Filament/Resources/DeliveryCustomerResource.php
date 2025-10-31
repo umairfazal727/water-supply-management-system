@@ -7,6 +7,8 @@ use App\Filament\Resources\DeliveryCustomerResource\RelationManagers;
 use App\Models\DeliveryCustomer;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -112,8 +114,16 @@ class DeliveryCustomerResource extends Resource
                 Tables\Columns\TextColumn::make('delivery_location')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('opening_balance')
+                    ->label('Opening Balance')
                     ->money($currency_symbol)
-                    ->sortable(),
+                    ->sortable()
+                    ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray')),
+                Tables\Columns\TextColumn::make('current_balance')
+                    ->label('Current Balance')
+                    ->getStateUsing(fn ($record) => $record->getCurrentBalance())
+                    ->money($currency_symbol)
+                    ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray'))
+                    ->sortable(false),
                 Tables\Columns\TextColumn::make('rate')
                     ->money($currency_symbol)
                     ->sortable()
@@ -145,6 +155,37 @@ class DeliveryCustomerResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('add_payment')
+                    ->label('Add Payment')
+                    ->icon('heroicon-o-plus-circle')
+                    ->color('success')
+                    ->form([
+                        TextInput::make('amount')
+                            ->label('Payment Amount')
+                            ->numeric()
+                            ->required()
+                            ->step(0.01),
+                        Forms\Components\DatePicker::make('payment_date')
+                            ->label('Payment Date')
+                            ->default(now())
+                            ->required(),
+                        Textarea::make('description')
+                            ->label('Description')
+                            ->default('Payment received')
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        \App\Models\DeliveryLedger::createEntry([
+                            'delivery_customer_id' => $record->id,
+                            'transaction_date' => $data['payment_date'],
+                            'entry_origin' => 'PAY-' . now()->format('Ymd'),
+                            'debit_amount' => $data['amount'],
+                            'credit_amount' => 0,
+                            'description' => $data['description'],
+                            'transaction_type' => 'payment'
+                        ]);
+                    })
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
