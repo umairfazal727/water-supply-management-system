@@ -60,22 +60,24 @@
 </head>
 <body>
     <!-- Header Section -->
-    <div class="header">
-        <div class="header-logo">
-            <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
-        </div>
-        <div class="company-info">
-            <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
-            <h2>REEM AL FALAJ CONST. WATER TR</h2>
-            <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
-        </div>
-        <div class="phone-info">
-            <p>050 8426001</p>
-            <p>050 2549368</p>
-            <p>055 7466868</p>
-            <p>052 9349368</p>
-        </div>
-    </div>
+    <table class="header-table">
+        <tr>
+            <td class="header-logo">
+                <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
+            </td>
+            <td class="company-info">
+                <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
+                <h2>REEM AL FALAJ CONST. WATER TR</h2>
+                <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
+            </td>
+            <td class="phone-info">
+                <p>050 8426001</p>
+                <p>050 2549368</p>
+                <p>055 7466868</p>
+                <p>052 9349368</p>
+            </td>
+        </tr>
+    </table>
 
     <h1>Transport Ledger (Detailed)</h1>
     <div class="muted">Period: {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</div>

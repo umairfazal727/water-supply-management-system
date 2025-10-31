@@ -10,12 +10,16 @@
             margin: 0;
             padding: 20px;
         }
-        .header {
-            display: flex;
-            align-items: center;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
             border-bottom: 2px solid #1b73b3;
-            padding-bottom: 10px;
             margin-bottom: 30px;
+        }
+        .header-table td {
+            vertical-align: middle;
+            padding: 10px;
+            border: none;
         }
         .header-logo {
             width: 25%;
@@ -165,22 +169,24 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-logo">
-            <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
-        </div>
-        <div class="company-info">
-            <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
-            <h2>REEM AL FALAJ CONST. WATER TR</h2>
-            <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
-        </div>
-        <div class="phone-info">
-            <p>050 8426001</p>
-            <p>050 2549368</p>
-            <p>055 7466868</p>
-            <p>052 9349368</p>
-        </div>
-    </div>
+    <table class="header-table">
+        <tr>
+            <td class="header-logo">
+                <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
+            </td>
+            <td class="company-info">
+                <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
+                <h2>REEM AL FALAJ CONST. WATER TR</h2>
+                <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
+            </td>
+            <td class="phone-info">
+                <p>050 8426001</p>
+                <p>050 2549368</p>
+                <p>055 7466868</p>
+                <p>052 9349368</p>
+            </td>
+        </tr>
+    </table>
 
     <div class="report-title">
         <h1>Customer Base Report</h1>
