@@ -41,8 +41,8 @@
                     <td>{{ $d->delivery_date?->format('M d, Y') }}</td>
                     <td>{{ $d->delivery_number }}</td>
                     <td>{{ $d->deliveryCustomer?->name }}</td>
-                    <td>{{ $d->order?->vehicle?->vehicle_number ?? 'N/A' }}</td>
-                    <td>{{ $d->order?->driver?->name ?? 'N/A' }}</td>
+                    <td>{{ $d->order?->vehicle_number ?? 'N/A' }}</td>
+                    <td>{{ $d->order?->name ?? 'N/A' }}</td>
                     <td>{{ $d->customer_site ?? 'N/A' }}</td>
                     <td>{{ $d->customer_location ?? 'N/A' }}</td>
                     <td>{{ $d->trip_size }} gal</td>
