@@ -60,7 +60,7 @@
 
         .phone-info {
             width: 25%;
-            text-align: left;
+            text-align: right;
             color: #1b73b3;
             font-size: 13px;
         }
