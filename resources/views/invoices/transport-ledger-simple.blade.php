@@ -4,7 +4,41 @@
     <meta charset="utf-8">
     <title>Transport Ledger</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 11px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            font-size: 11px; 
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #1b73b3;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .header img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+        .company-info {
+            flex: 1;
+            text-align: right;
+            color: #1b73b3;
+        }
+        .company-info h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1b73b3;
+        }
+        .company-info p {
+            margin: 2px 0;
+            font-size: 13px;
+        }
         h1 { font-size: 18px; margin: 0; }
         .muted { color: #666; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -14,6 +48,17 @@
     </style>
     </head>
 <body>
+    <!-- Header Section -->
+    <div class="header">
+        <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo">
+        <div class="company-info">
+            <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
+            <h2>REEM AL FALAJ CONST. WATER TR</h2>
+            <p>Salja Industrial Area, Sharjah - U.A.E.</p>
+            <p>050 8426001 | 055 2496358 | 055 7466868 | 052 3943958</p>
+        </div>
+    </div>
+
     <h1>Transport Ledger</h1>
     <div class="muted">Period: {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</div>
     @if($deliveryCustomer)
@@ -28,6 +73,7 @@
                 <th>Customer</th>
                 <th>Trip Size</th>
                 <th>Amount</th>
+                <th>Payment Method</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -39,6 +85,7 @@
                     <td>{{ $d->deliveryCustomer?->name }}</td>
                     <td>{{ $d->trip_size }} gal</td>
                     <td>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($d->total_amount, 2) }}</td>
+                    <td>{{ ucfirst(str_replace('_',' ', $d->payment_method)) }}</td>
                     <td>{{ ucfirst(str_replace('_',' ', $d->status)) }}</td>
                 </tr>
             @endforeach

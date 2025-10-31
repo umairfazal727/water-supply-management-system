@@ -48,8 +48,8 @@ class Reports extends Page
 
     public function handleGenerateReport($filters)
     {
-        $this->startDate = \Carbon\Carbon::parse($filters['startDate']);
-        $this->endDate = \Carbon\Carbon::parse($filters['endDate']);
+        $this->startDate = \Carbon\Carbon::parse($filters['startDate'])->startOfDay();
+        $this->endDate = \Carbon\Carbon::parse($filters['endDate'])->endOfDay();
         $this->reportType = $filters['reportType'];
         $this->branchId = $filters['branchId'];
         $this->companyName = $filters['companyName'];
@@ -82,8 +82,8 @@ class Reports extends Page
     private function generateCustomerBaseReport()
     {
         $query = Order::with(['customer', 'branch'])
-                      ->whereBetween('order_date', [$this->startDate, $this->endDate])
-                      ->where('payment_type', 'credit'); // Only credit/pending payments
+                      ->whereBetween('order_date', [$this->startDate, $this->endDate]);
+                    //   ->where('payment_type', 'credit');
 
         if ($this->branchId) {
             $query->where('branch_id', $this->branchId);

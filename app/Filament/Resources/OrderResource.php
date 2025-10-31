@@ -123,6 +123,13 @@ class OrderResource extends Resource
                 }),
             ])
             ->actions([
+                Tables\Actions\Action::make('download_invoice')
+                ->label('Invoice')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->url(fn ($record) => $record->id ? url('/download-invoice/' . $record->id) : null)
+                ->openUrlInNewTab()
+                ->visible(fn ($record) => $record->id !== null),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

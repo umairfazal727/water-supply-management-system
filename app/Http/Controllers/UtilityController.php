@@ -8,6 +8,7 @@ use App\Models\Ledger;
 use Mpdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class UtilityController extends Controller
 {
@@ -73,8 +74,10 @@ class UtilityController extends Controller
     public function downloadStatement($customer_id, Request $request)
     {
         $customer = \App\Models\Customer::findOrFail($customer_id);
-        $startDate = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
+        $startDateInput = $request->get('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDateInput = $request->get('end_date', now()->endOfMonth()->format('Y-m-d'));
+        $startDate = \Carbon\Carbon::parse($startDateInput)->startOfDay();
+        $endDate = \Carbon\Carbon::parse($endDateInput)->endOfDay();
         
         // Get orders with payment_type = 'on_account' (pending/deferred)
         $orders = Order::where('customer_id', $customer_id)
@@ -86,8 +89,8 @@ class UtilityController extends Controller
         $data = [
             'customer' => $customer,
             'orders' => $orders,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
+            'startDate' => $startDateInput,
+            'endDate' => $endDateInput,
             'totalAmount' => $orders->sum('total_price'),
         ];
 
@@ -148,9 +151,13 @@ class UtilityController extends Controller
             abort(404, 'No customers found with company name: "' . $company_name . '". Available companies: ' . $existingCompanies->implode(', '));
         }
         // Get orders with payment_type = 'credit'
+        // Convert dates to Carbon with proper start/end of day for datetime fields
+        $startDateCarbon = \Carbon\Carbon::parse($startDate)->startOfDay();
+        $endDateCarbon = \Carbon\Carbon::parse($endDate)->endOfDay();
+        
         $orders = Order::whereIn('customer_id', $customerIds)
             ->where('payment_type', 'credit')
-            ->whereBetween('order_date', [$startDate, $endDate])
+            ->whereBetween('order_date', [$startDateCarbon, $endDateCarbon])
             ->orderBy('order_date', 'desc')
             ->get();
         

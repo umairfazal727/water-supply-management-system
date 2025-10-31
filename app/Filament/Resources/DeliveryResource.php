@@ -176,13 +176,13 @@ class DeliveryResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\Action::make('download_invoice')
-                    ->label('Invoice')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->color('success')
-                    ->url(fn ($record) => $record->order_id ? url('/download-invoice/' . $record->order_id) : null)
-                    ->openUrlInNewTab()
-                    ->visible(fn ($record) => $record->order_id !== null),
+                // Tables\Actions\Action::make('download_invoice')
+                //     ->label('Invoice')
+                //     ->icon('heroicon-o-arrow-down-tray')
+                //     ->color('success')
+                //     ->url(fn ($record) => $record->order_id ? url('/download-invoice/' . $record->order_id) : null)
+                //     ->openUrlInNewTab()
+                //     ->visible(fn ($record) => $record->order_id !== null),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
