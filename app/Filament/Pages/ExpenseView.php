@@ -41,8 +41,8 @@ class ExpenseView extends Page
 
     public function handleGenerateReport($filters)
     {
-        $this->startDate = \Carbon\Carbon::parse($filters['startDate']);
-        $this->endDate = \Carbon\Carbon::parse($filters['endDate']);
+        $this->startDate = \Carbon\Carbon::parse($filters['startDate'])->startOfDay();
+        $this->endDate = \Carbon\Carbon::parse($filters['endDate'])->endOfDay();
         $this->branchId = $filters['branchId'] ?? null;
         $this->expenseCategoryId = $filters['expenseCategoryId'] ?? null;
         

@@ -39,4 +39,44 @@ class DeliveryCustomer extends Model
     {
         return $this->hasMany(Delivery::class);
     }
+
+    public function ledgers(): HasMany
+    {
+        return $this->hasMany(DeliveryLedger::class);
+    }
+
+    /**
+     * Get current balance including opening balance and all ledger entries
+     */
+    public function getCurrentBalance()
+    {
+        $openingBalance = (float) $this->opening_balance;
+        $ledgerBalance = DeliveryLedger::getDeliveryCustomerBalance($this->id);
+        return $openingBalance + $ledgerBalance;
+    }
+
+    /**
+     * Create opening balance ledger entry if needed
+     */
+    public function createOpeningBalanceEntry()
+    {
+        if ($this->opening_balance != 0) {
+            // Check if opening balance entry already exists
+            $existingEntry = $this->ledgers()
+                ->where('transaction_type', 'opening_balance')
+                ->first();
+
+            if (!$existingEntry) {
+                DeliveryLedger::createEntry([
+                    'delivery_customer_id' => $this->id,
+                    'transaction_date' => now()->startOfDay(),
+                    'entry_origin' => 'OB',
+                    'debit_amount' => 0,
+                    'credit_amount' => $this->opening_balance,
+                    'description' => 'Opening Balance',
+                    'transaction_type' => 'opening_balance'
+                ]);
+            }
+        }
+    }
 }

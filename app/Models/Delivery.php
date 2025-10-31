@@ -35,6 +35,27 @@ class Delivery extends Model
         'delivery_photos' => 'array',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($delivery) {
+            // Create ledger entry for credit deliveries
+            if ($delivery->delivery_customer_id && in_array($delivery->payment_method, ['credit', 'check'])) {
+                DeliveryLedger::createEntry([
+                    'delivery_customer_id' => $delivery->delivery_customer_id,
+                    'delivery_id' => $delivery->id,
+                    'transaction_date' => $delivery->delivery_date ?? now(),
+                    'entry_origin' => 'DELIVERY-' . $delivery->id,
+                    'debit_amount' => 0,
+                    'credit_amount' => $delivery->total_amount,
+                    'description' => "Delivery #{$delivery->delivery_number} - {$delivery->trip_size} gallons",
+                    'transaction_type' => 'delivery'
+                ]);
+            }
+        });
+    }
+
     // Relationships
     public function branch(): BelongsTo
     {
