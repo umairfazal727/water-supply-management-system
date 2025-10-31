@@ -177,7 +177,7 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo">
-                    <img src="{{asset('invoice-img/logo.png')}}" alt="Company Logo" class="logo">
+                    <img src="{{asset('invoice-img/logo.png')}}" style="height: 200px;  width: 200px;" alt="Company Logo" class="logo">
                 </td>
                 <td class="company-info">
                     <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
