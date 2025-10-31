@@ -10,12 +10,16 @@
             margin: 0;
             padding: 20px;
         }
-        .header {
-            display: flex;
-            align-items: center;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
             border-bottom: 2px solid #1b73b3;
-            padding-bottom: 10px;
             margin-bottom: 15px;
+        }
+        .header-table td {
+            vertical-align: middle;
+            padding: 10px;
+            border: none;
         }
         .header-logo {
             width: 25%;

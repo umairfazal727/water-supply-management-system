@@ -24,49 +24,46 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .header {
-            display: flex;
-            align-items: center;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
             border-bottom: 2px solid #1b73b3;
-            padding-bottom: 10px;
             margin-bottom: 15px;
         }
-
+        .header-table td {
+            vertical-align: middle;
+            padding: 10px;
+            border: none;
+        }
         .header-logo {
             width: 25%;
             text-align: left;
         }
-
         .header img {
             width: 200px;
             height: 200px;
             object-fit: contain;
         }
-
         .company-info {
             width: 50%;
             text-align: center;
             color: #1b73b3;
         }
-
         .company-info h2 {
             margin: 0;
             font-size: 20px;
             font-weight: 700;
             color: #1b73b3;
         }
-
         .company-info p {
             margin: 2px 0;
             font-size: 13px;
         }
-
         .phone-info {
             width: 25%;
             text-align: right;
             color: #1b73b3;
         }
-
         .phone-info p {
             margin: 3px 0;
             font-size: 13px;

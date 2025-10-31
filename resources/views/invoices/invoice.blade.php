@@ -22,49 +22,47 @@
         }
 
         /* Header */
-        .header {
-            display: flex;
-            align-items: center;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
             border-bottom: 2px solid #1b73b3;
-            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
-
+        .header-table td {
+            vertical-align: middle;
+            padding: 10px;
+            border: none;
+        }
         .header-logo {
             width: 25%;
             text-align: left;
         }
-
         .logo {
             width: 200px;
             height: 200px;
             object-fit: contain;
         }
-
         .company-info {
             width: 50%;
             text-align: center;
             color: #1b73b3;
             font-size: 13px;
         }
-
         .company-info h2 {
             margin: 0;
             color: #1b73b3;
             font-size: 18px;
             font-weight: bold;
         }
-
         .company-info p {
             margin: 2px 0;
         }
-
         .phone-info {
             width: 25%;
             text-align: right;
             color: #1b73b3;
             font-size: 13px;
         }
-
         .phone-info p {
             margin: 3px 0;
         }
