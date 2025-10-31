@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Expense Report</title>
+    <title>Customer Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -121,7 +121,7 @@
             margin-top: 20px;
         }
         th {
-            background-color: #343a40;
+            background-color: #1b73b3;
             color: white;
             padding: 10px 8px;
             text-align: left;
@@ -142,11 +142,11 @@
             font-size: 10px;
             font-weight: bold;
         }
-        .badge-approved {
+        .badge-sweet {
             background-color: #d4edda;
             color: #155724;
         }
-        .badge-pending {
+        .badge-salt {
             background-color: #fff3cd;
             color: #856404;
         }
@@ -183,7 +183,7 @@
     </div>
 
     <div class="report-title">
-        <h1>Expense Report</h1>
+        <h1>Customer Base Report</h1>
         <p>Generated: {{ now()->format('M d, Y h:i A') }}</p>
     </div>
 
@@ -199,16 +199,16 @@
                 <value>{{ $startDate->diffInDays($endDate) + 1 }} days</value>
             </div>
             <div class="summary-item">
+                <label>Company</label>
+                <value>{{ $insights['company_name'] ?? 'All Companies' }}</value>
+            </div>
+            <div class="summary-item">
                 <label>Branch</label>
                 <value>{{ $insights['branch_name'] ?? 'All Branches' }}</value>
             </div>
-            <div class="summary-item">
-                <label>Category</label>
-                <value>{{ $insights['category_name'] ?? 'All Categories' }}</value>
-            </div>
         </div>
         <div class="summary-total">
-            <label>Total Expenses: {{ $insights['total_expenses'] ?? 0 }} records</label>
+            <label>Total Orders: {{ $insights['total_orders'] ?? 0 }} records</label>
             <value>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($insights['total_amount'] ?? 0, 2) }}</value>
         </div>
     </div>
@@ -217,45 +217,49 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Order ID</th>
                 <th>Date</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Branch</th>
+                <th>Company</th>
+                <th>Customer</th>
+                <th>Vehicle</th>
+                <th>Driver</th>
+                <th>Product Type</th>
+                <th>Quantity</th>
                 <th>Amount</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Created By</th>
+                <th>Payment Type</th>
+                <th>Branch</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($reportData as $expense)
+            @foreach($reportData as $order)
             <tr>
-                <td>#{{ $expense->id }}</td>
-                <td>{{ $expense->expense_date->format('M d, Y') }}</td>
-                <td>{{ $expense->title }}</td>
-                <td>{{ $expense->category?->name ?? 'N/A' }}</td>
-                <td>{{ $expense->branch?->name ?? 'N/A' }}</td>
-                <td class="currency">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($expense->amount, 2) }}</td>
-                <td>{{ ucfirst(str_replace('_', ' ', $expense->payment_method ?? 'N/A')) }}</td>
+                <td>#{{ $order->id }}</td>
+                <td>{{ \Carbon\Carbon::parse($order->order_date)->format('M d, Y') }}</td>
+                <td>{{ $order->company_name ?? 'N/A' }}</td>
+                <td>{{ $order->customer_name ?? ($order->customer?->company_name ?? 'N/A') }}</td>
+                <td>{{ $order->vehicle_number ?? 'N/A' }}</td>
+                <td>{{ $order->driver_name ?? 'N/A' }}</td>
                 <td>
-                    <span class="badge {{ $expense->is_approved ? 'badge-approved' : 'badge-pending' }}">
-                        {{ $expense->is_approved ? 'Approved' : 'Pending' }}
+                    <span class="badge {{ $order->product_type === 'sweet_water' ? 'badge-sweet' : 'badge-salt' }}">
+                        {{ $order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water' }}
                     </span>
                 </td>
-                <td>{{ $expense->user?->name ?? 'N/A' }}</td>
+                <td>{{ $order->quantity ?? 'N/A' }}</td>
+                <td class="currency">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($order->total_price, 2) }}</td>
+                <td>{{ ucfirst($order->payment_type ?? 'N/A') }}</td>
+                <td>{{ $order->branch?->name ?? 'N/A' }}</td>
             </tr>
             @endforeach
             <tr style="background-color: #e9ecef; font-weight: bold;">
-                <td colspan="5" style="text-align: right; padding: 12px 8px;">Total:</td>
+                <td colspan="8" style="text-align: right; padding: 12px 8px;">Total:</td>
                 <td class="currency" style="font-size: 14px;">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($insights['total_amount'] ?? 0, 2) }}</td>
-                <td colspan="3"></td>
+                <td colspan="2"></td>
             </tr>
         </tbody>
     </table>
     @else
     <div style="text-align: center; padding: 40px; color: #666;">
-        <p>No expense data found for the selected criteria.</p>
+        <p>No order data found for the selected criteria.</p>
     </div>
     @endif
 

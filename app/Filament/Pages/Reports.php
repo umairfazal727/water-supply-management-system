@@ -158,57 +158,48 @@ class Reports extends Page
 
     public function exportReport()
     {
-        $filename = $this->reportType . '_' . $this->startDate->format('Y-m-d') . '_to_' . $this->endDate->format('Y-m-d') . '.csv';
+        // Generate the report if not already generated
+        if (empty($this->reportData)) {
+            $this->generateReport();
+        }
+
+        // Determine which template to use based on report type
+        $template = $this->reportType === 'customer_base' ? 'invoices.customer-report' : 'invoices.expense-report';
         
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        // Prepare view data based on report type
+        $viewData = [
+            'reportData' => $this->reportData,
+            'insights' => $this->insights,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
         ];
 
-        $callback = function() {
-            $file = fopen('php://output', 'w');
-            
-            switch ($this->reportType) {
-                case 'customer_base':
-                    fputcsv($file, ['Order ID', 'Date', 'Company', 'Customer', 'Vehicle', 'Driver', 'Product Type', 'Quantity', 'Amount', 'Payment Type', 'Branch']);
-                    foreach ($this->reportData as $order) {
-                        fputcsv($file, [
-                            $order->id,
-                            \Carbon\Carbon::parse($order->order_date)->format('Y-m-d'),
-                            $order->company_name,
-                            $order->customer_name,
-                            $order->vehicle_number,
-                            $order->driver_name,
-                            $order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water',
-                            $order->quantity,
-                            $order->total_price,
-                            ucfirst($order->payment_type),
-                            $order->branch?->name ?? 'N/A'
-                        ]);
-                    }
-                    break;
-                    
-                case 'expense_base':
-                    fputcsv($file, ['ID', 'Date', 'Title', 'Category', 'Branch', 'Amount', 'Approved', 'Created By']);
-                    foreach ($this->reportData as $expense) {
-                        fputcsv($file, [
-                            $expense->id,
-                            $expense->expense_date->format('Y-m-d'),
-                            $expense->title,
-                            $expense->category?->name ?? 'N/A',
-                            $expense->branch?->name ?? 'N/A',
-                            $expense->amount,
-                            $expense->is_approved ? 'Yes' : 'No',
-                            $expense->user?->name ?? 'N/A'
-                        ]);
-                    }
-                    break;
-            }
-            
-            fclose($file);
-        };
+        // Add branch_name to insights if not present (for customer_base reports)
+        if ($this->reportType === 'customer_base' && !isset($this->insights['branch_name'])) {
+            $viewData['insights']['branch_name'] = $this->branchId 
+                ? Branch::find($this->branchId)?->name 
+                : 'All Branches';
+        }
 
-        return Response::stream($callback, 200, $headers);
+        $html = view($template, $viewData)->render();
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L', // Landscape for better table display
+            'orientation' => 'L',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+        ]);
+
+        $mpdf->WriteHTML($html);
+        
+        $filename = $this->reportType . '_report_' . $this->startDate->format('Y-m-d') . '_to_' . $this->endDate->format('Y-m-d') . '.pdf';
+        
+        return response()->streamDownload(function() use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename);
     }
 
     public function downloadStatement()
