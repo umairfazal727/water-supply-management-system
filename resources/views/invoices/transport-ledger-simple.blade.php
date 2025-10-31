@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Transport Ledger (Simple)</title>
+    <title>Transport Ledger</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 11px; }
         h1 { font-size: 18px; margin: 0; }
@@ -14,7 +14,7 @@
     </style>
     </head>
 <body>
-    <h1>Transport Ledger (Simple)</h1>
+    <h1>Transport Ledger</h1>
     <div class="muted">Period: {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</div>
     @if($deliveryCustomer)
         <div class="muted">Customer: {{ $deliveryCustomer->name }}{{ $deliveryCustomer->company_name ? ' - ' . $deliveryCustomer->company_name : '' }}</div>

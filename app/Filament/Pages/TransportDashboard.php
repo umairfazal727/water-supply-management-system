@@ -16,7 +16,6 @@ class TransportDashboard extends Page
 
     protected static string $view = 'filament.pages.transport-dashboard';
 
-    public $date;
     public $kpis = [
         'expense' => 0,
         'deliveries' => 0,
@@ -25,12 +24,6 @@ class TransportDashboard extends Page
     ];
 
     public function mount()
-    {
-        $this->date = today();
-        $this->loadKpis();
-    }
-
-    public function updatedDate()
     {
         $this->loadKpis();
     }
@@ -43,13 +36,14 @@ class TransportDashboard extends Page
     private function loadKpis(): void
     {
         $branchId = $this->getTransportBranchId();
+        $today = today();
 
         $expense = Expense::where('branch_id', $branchId)
-            ->whereDate('expense_date', $this->date)
+            ->whereDate('expense_date', $today)
             ->sum('amount');
 
         $deliveriesQuery = Delivery::where('branch_id', $branchId)
-            ->whereDate('delivery_date', $this->date);
+            ->whereDate('delivery_date', $today);
 
         $deliveries = (clone $deliveriesQuery)->count();
         $revenue = (clone $deliveriesQuery)->sum('total_amount');

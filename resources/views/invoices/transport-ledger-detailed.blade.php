@@ -28,8 +28,7 @@
                 <th>Customer</th>
                 <th>Vehicle</th>
                 <th>Driver</th>
-                <th>Time</th>
-                <th>Tanker Size</th>
+                <th>Site</th>
                 <th>Location</th>
                 <th>Trip Size</th>
                 <th>Amount</th>
@@ -42,10 +41,9 @@
                     <td>{{ $d->delivery_date?->format('M d, Y') }}</td>
                     <td>{{ $d->delivery_number }}</td>
                     <td>{{ $d->deliveryCustomer?->name }}</td>
-                    <td>{{ $d->vehicle?->vehicle_number ?? 'N/A' }}</td>
-                    <td>{{ $d->driver?->name ?? 'N/A' }}</td>
-                    <td>{{ $d->delivery_time?->format('H:i') }}</td>
-                    <td>{{ $d->deliveryCustomer?->tanker_size ?? 'N/A' }}</td>
+                    <td>{{ $d->order?->vehicle?->vehicle_number ?? 'N/A' }}</td>
+                    <td>{{ $d->order?->driver?->name ?? 'N/A' }}</td>
+                    <td>{{ $d->customer_site ?? 'N/A' }}</td>
                     <td>{{ $d->customer_location ?? 'N/A' }}</td>
                     <td>{{ $d->trip_size }} gal</td>
                     <td>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($d->total_amount, 2) }}</td>

@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="flex justify-end">
-        <button wire:click="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Generate</button>
+        <button wire:click="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Generate</button>
     </div>
 </div>
 
