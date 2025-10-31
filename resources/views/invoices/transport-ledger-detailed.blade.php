@@ -67,7 +67,7 @@
     <table class="header-table">
         <tr>
             <td class="header-logo">
-                <img src="{{asset('invoice-img/logo.png')}}" style="height: 200px;  width: 200px;" alt="Company Logo">
+                <img src="{{asset('invoice-img/logo.png')}}" style="height: 150px;  width: 150px;" alt="Company Logo">
             </td>
             <td class="company-info">
                 <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
@@ -75,10 +75,10 @@
                 <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
             </td>
             <td class="phone-info">
-                <p>050 8426001</p>
-                <p>050 2549368</p>
-                <p>055 7466868</p>
-                <p>052 9349368</p>
+                <p style="margin: 0;">050 8426001</p>
+                <p style="margin: 0;">050 2549368</p>
+                <p style="margin: 0;">055 7466868</p>
+                <p style="margin: 0;">052 9349368</p>
             </td>
         </tr>
     </table>

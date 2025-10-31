@@ -28,41 +28,49 @@
             border-bottom: 2px solid #1b73b3;
             margin-bottom: 15px;
         }
+
         .header-table td {
             vertical-align: middle;
             padding: 10px;
             border: none;
         }
+
         .header-logo {
             width: 25%;
             text-align: left;
         }
+
         .logo {
             width: 200px;
             height: 200px;
             object-fit: contain;
         }
+
         .company-info {
             width: 50%;
             text-align: center;
             color: #1b73b3;
             font-size: 13px;
         }
+
         .company-info h2 {
             margin: 0;
             color: #1b73b3;
             font-size: 18px;
             font-weight: bold;
         }
+
         .company-info p {
             margin: 2px 0;
         }
+
         .phone-info {
             width: 25%;
             text-align: right;
             color: #1b73b3;
             font-size: 13px;
         }
+
         .phone-info p {
             margin: 3px 0;
         }
@@ -177,7 +185,8 @@
         <table class="header-table">
             <tr>
                 <td class="header-logo">
-                    <img src="{{asset('invoice-img/logo.png')}}" style="height: 200px;  width: 200px;" alt="Company Logo" class="logo">
+                    <img src="{{ asset('invoice-img/logo.png') }}" style="height: 150px;  width: 150px;" alt="Company Logo"
+                        class="logo">
                 </td>
                 <td class="company-info">
                     <h2>ريم الفلج لتجارة المياه المخصصة لاعمال البناء</h2>
@@ -185,10 +194,10 @@
                     <p>Sajja Industrial Area, Sharjah - U.A.E.</p>
                 </td>
                 <td class="phone-info">
-                    <p>050 8426001</p>
-                    <p>050 2549368</p>
-                    <p>055 7466868</p>
-                    <p>052 9349368</p>
+                    <p style="margin: 0;">050 8426001</p>
+                    <p style="margin: 0;">050 2549368</p>
+                    <p style="margin: 0;">055 7466868</p>
+                    <p style="margin: 0;">052 9349368</p>
                 </td>
             </tr>
         </table>
@@ -213,10 +222,10 @@
                 <td class="label">TRN NO:</td>
                 <td>{{ $trn_no }}</td>
             </tr>
-        </table>    
+        </table>
 
         <p style="margin-top:25px;">
-            <strong>TO</strong><br>{{ strtoupper($order->company_name ?: ($order->customer->company_name ?? '')) }}<br>{{ strtoupper($order->customer->address ?? 'SHARJAH-UAE') }}
+            <strong>TO</strong><br>{{ strtoupper($order->company_name ?: $order->customer->company_name ?? '') }}<br>{{ strtoupper($order->customer->address ?? 'SHARJAH-UAE') }}
         </p>
 
         <!-- Table -->
