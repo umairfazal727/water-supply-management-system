@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Customer;
 use App\Models\Branch;
+use App\Models\DeliveryCustomer;
 use Livewire\Attributes\On; 
 
 class Cart extends Component
@@ -101,10 +102,27 @@ class Cart extends Component
 
         session()->flash('success', 'Order created successfully!');
         
+        // Find delivery customers with the same company_name (case-insensitive, trimmed)
+        $matchingDeliveryCustomers = [];
+        if (!empty($this->companyName)) {
+            $trimmedCompanyName = trim($this->companyName);
+            $matchingDeliveryCustomers = DeliveryCustomer::whereRaw('LOWER(TRIM(company_name)) = LOWER(?)', [$trimmedCompanyName])
+                ->where('is_active', true)
+                ->pluck('id')
+                ->toArray();
+        }
+        
         // Clear the customer selection
         $this->clearCustomer();
         
-        // Redirect to orders list
+        // If there are matching delivery customers, redirect to delivery creation
+        if (!empty($matchingDeliveryCustomers) && $order->customer_id) {
+            // Pre-select the first matching delivery customer
+            $deliveryCustomerId = $matchingDeliveryCustomers[0];
+            return $this->redirect(url('admin/deliveries/create?order_id=' . $order->id . '&delivery_customer_id=' . $deliveryCustomerId));
+        }
+        
+        // Redirect to orders list if no matching delivery customers
         return $this->redirect(url('admin/orders'));
     }
 

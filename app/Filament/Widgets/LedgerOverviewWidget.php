@@ -127,9 +127,19 @@ class LedgerOverviewWidget extends BaseWidget
                     ]),
                 
                 Tables\Filters\SelectFilter::make('customer')
-                    ->relationship('customer', 'company_name')
-                    ->searchable()
-                    ->preload(),
+                    ->label('Customer')
+                    ->options(function () {
+                        return \App\Models\Customer::whereNotNull('company_name')
+                            ->where('company_name', '!=', '')
+                            ->get()
+                            ->mapWithKeys(function ($customer) {
+                                $label = ($customer->company_name ?: 'N/A') . ' - ' . 
+                                        ($customer->driver?->name ?: 'N/A') . ' - ' . 
+                                        ($customer->vehicle?->vehicle_number ?: 'N/A');
+                                return [$customer->id => $label];
+                            });
+                    })
+                    ->searchable(),
                 
                 Tables\Filters\Filter::make('transaction_date')
                     ->form([
