@@ -14,14 +14,12 @@ class CreateDelivery extends CreateRecord
     {
         parent::mount();
 
-        // Pre-fill form with query parameters
+        // Pre-fill form with order_id from query parameters
         $orderId = request()->query('order_id');
-        $deliveryCustomerId = request()->query('delivery_customer_id');
 
-        if ($orderId || $deliveryCustomerId) {
+        if ($orderId) {
             $this->form->fill([
                 'order_id' => $orderId,
-                'delivery_customer_id' => $deliveryCustomerId,
             ]);
         }
     }
