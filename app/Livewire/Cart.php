@@ -92,7 +92,7 @@ class Cart extends Component
             'price' => $this->price,
             'total_price' => $this->price,
             'payment_type' => $this->paymentType,
-            'branch_id' => $customer->vehicle ? $customer->vehicle->branch_id : null,
+            'branch_id' => $this->branchId,
             'order_date' => $this->orderDate,
         ]);
 
@@ -122,6 +122,7 @@ class Cart extends Component
         $this->productType = 'sweet_water';
         $this->price = 0;
         $this->paymentType = 'cash';
+        $this->branchId = null;
         $this->orderDate = now()->format('Y-m-d\TH:i');
     }
 

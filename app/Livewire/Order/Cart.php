@@ -125,6 +125,7 @@ class Cart extends Component
         $this->productType = 'sweet_water';
         $this->price = 0;
         $this->paymentType = 'cash';
+        $this->branchId = null;
         $this->orderDate = now()->format('Y-m-d\TH:i');
     }
 
