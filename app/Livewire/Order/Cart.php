@@ -101,15 +101,17 @@ class Cart extends Component
 
         session()->flash('success', 'Order created successfully!');
         
-        // Clear the customer selection
-        $this->clearCustomer();
-        
-        // Check if company_name matches "REEM AL FALAJ TR." (case-insensitive, trimmed)
-        $trimmedCompanyName = trim($this->companyName);
-        if (strtoupper($trimmedCompanyName) === 'REEM AL FALAJ TR.') {
+        // Check if order's company_name matches "REEM AL FALAJ TR." (case-insensitive, trimmed)
+        // $trimmedCompanyName = trim($order->company_name);
+        if ($order->company_name == 'REEM AL FALAJ TR.') {
+            // Clear the customer selection
+            $this->clearCustomer();
             // Redirect to delivery creation with order_id
             return $this->redirect(url('admin/deliveries/create?order_id=' . $order->id));
         }
+        
+        // Clear the customer selection
+        $this->clearCustomer();
         
         // Redirect to orders list
         return $this->redirect(url('admin/orders'));
