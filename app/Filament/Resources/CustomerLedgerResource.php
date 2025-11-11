@@ -245,7 +245,7 @@ class CustomerLedgerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('transaction_date', 'desc')
+            ->defaultSort('order_id', 'desc')
             ->poll('30s');
     }
 

@@ -131,11 +131,34 @@ class OrderResource extends Resource
                 ->openUrlInNewTab()
                 ->visible(fn ($record) => $record->id !== null),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading('Delete Order')
+                    ->modalDescription(function ($record) {
+                        $ledgerCount = \App\Models\Ledger::where('order_id', $record->id)->count();
+                        if ($ledgerCount > 0) {
+                            return "Are you sure you want to delete this order? This will also delete {$ledgerCount} related ledger " . 
+                                   ($ledgerCount === 1 ? 'entry' : 'entries') . " and recalculate the customer's balance.";
+                        }
+                        return 'Are you sure you want to delete this order?';
+                    })
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Order Deleted')
+                            ->body('The order and its related ledger entries have been deleted successfully.')
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->modalHeading('Delete Selected Orders')
+                        ->modalDescription('Are you sure you want to delete the selected orders? This will also delete any related ledger entries and recalculate customer balances.')
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Orders Deleted')
+                                ->body('The selected orders and their related ledger entries have been deleted successfully.')
+                        ),
                     ExportBulkAction::make()->exports([
                         ExcelExport::make()
                             ->fromTable()

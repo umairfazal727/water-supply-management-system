@@ -33,16 +33,41 @@ class DeliveryResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
-                Forms\Components\Select::make('delivery_customer_id')
+                    Forms\Components\Select::make('delivery_customer_id')
                     ->relationship('deliveryCustomer', 'name')
                     ->required()
                     ->searchable()
                     ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        if ($state) {
+                            $customer = \App\Models\DeliveryCustomer::find($state);
+                            if ($customer) {
+                                $set('customer_site', $customer->address);
+                                $set('customer_location', $customer->delivery_location);
+                            }
+                        }
+                    })
                     ->label('Delivery Customer'),
+                // Forms\Components\Select::make('order_id')
+                //     ->relationship('order', 'id')
+                //     ->searchable()
+                //     ->preload(),
                 Forms\Components\Select::make('order_id')
-                    ->relationship('order', 'id')
-                    ->searchable()
-                    ->preload(),
+                        ->relationship('order', 'id')
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                            if ($state) {
+                                $order = \App\Models\Order::find($state);
+                                if ($order) {
+                                    $set('total_amount', $order->total_amount);
+                                }
+                            }
+                        })
+                    ->label('Order'),
+                    
                 Forms\Components\TextInput::make('delivery_number')
                     ->required()
                     ->unique(ignoreRecord: true)

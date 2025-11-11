@@ -39,6 +39,50 @@ class Order extends Model
                 ]);
             }
         });
+
+        static::deleting(function ($order) {
+            // Delete related ledger entries when order is deleted
+            $relatedLedgers = Ledger::where('order_id', $order->id)->get();
+            
+            if ($relatedLedgers->isNotEmpty()) {
+                $customerId = $order->customer_id;
+                
+                // Delete the ledger entries
+                Ledger::where('order_id', $order->id)->delete();
+                
+                // Recalculate balances for all remaining ledger entries for this customer
+                if ($customerId) {
+                    static::recalculateCustomerLedgerBalances($customerId);
+                }
+            }
+        });
+    }
+
+    /**
+     * Recalculate all ledger balances for a customer after deletion
+     */
+    protected static function recalculateCustomerLedgerBalances($customerId)
+    {
+        $customer = Customer::find($customerId);
+        if (!$customer) {
+            return;
+        }
+
+        // Get all ledger entries for this customer in chronological order
+        $ledgers = Ledger::where('customer_id', $customerId)
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Start with opening balance
+        $runningBalance = (float) ($customer->opening_balance ?? 0);
+
+        // Recalculate each entry's balance
+        foreach ($ledgers as $ledger) {
+            $runningBalance = $runningBalance - (float) $ledger->credit_amount + (float) $ledger->debit_amount;
+            $ledger->balance = $runningBalance;
+            $ledger->saveQuietly(); // Save without triggering events
+        }
     }
 
     public function items()
@@ -51,6 +95,11 @@ class Order extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function ledgers()
+    {
+        return $this->hasMany(Ledger::class);
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -60,6 +109,7 @@ class Order extends Model
     {
         return $this->belongsTo(Branch::class);
     }
+    
     public function delivery(): BelongsTo
     {
         return $this->belongsTo(Delivery::class);
