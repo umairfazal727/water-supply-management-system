@@ -66,6 +66,7 @@ class EditCart extends Component
             'company_name' => $this->companyName,
             'tanker_size' => $this->tankerSize,
             'product_type' => $this->productType,
+            'price' => $this->price,
             'total_price' => $this->price,
             'payment_type' => $this->paymentType,
             'branch_id' => $this->branchId,

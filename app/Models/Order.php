@@ -40,6 +40,89 @@ class Order extends Model
             }
         });
 
+        static::updated(function ($order) {
+            // Handle ledger updates when order is edited
+            $originalPaymentType = $order->getOriginal('payment_type');
+            $newPaymentType = $order->payment_type;
+            $originalPrice = (float) ($order->getOriginal('price') ?? $order->getOriginal('total_price') ?? 0);
+            $newPrice = (float) ($order->price ?? $order->total_price ?? 0);
+            
+            $isCreditType = fn($type) => in_array($type, ['credit', 'on_account']);
+            $wasCredit = $isCreditType($originalPaymentType);
+            $isNowCredit = $isCreditType($newPaymentType);
+            
+            // Find existing ledger entry for this order
+            $existingLedger = Ledger::where('order_id', $order->id)->first();
+            
+            // Scenario 1: Payment type changed from credit/on_account to cash/bank_transfer
+            if ($wasCredit && !$isNowCredit && $existingLedger) {
+                // Delete the ledger entry
+                $customerId = $order->customer_id;
+                $existingLedger->delete();
+                
+                // Recalculate balances for all remaining ledger entries for this customer
+                if ($customerId) {
+                    static::recalculateCustomerLedgerBalances($customerId);
+                }
+            }
+            // Scenario 2: Payment type changed from cash/bank_transfer to credit/on_account
+            elseif (!$wasCredit && $isNowCredit) {
+                // Create a new ledger entry
+                Ledger::createEntry([
+                    'customer_id' => $order->customer_id,
+                    'order_id' => $order->id,
+                    'transaction_date' => $order->order_date ?? now(),
+                    'entry_origin' => 'ORDER-' . $order->id,
+                    'debit_amount' => 0,
+                    'credit_amount' => $newPrice,
+                    'description' => "Order #{$order->id} - {$order->product_type} - {$order->tanker_size} tanker",
+                    'transaction_type' => 'order'
+                ]);
+            }
+            // Scenario 3: Payment type stayed as credit/on_account but price changed
+            elseif ($wasCredit && $isNowCredit && $existingLedger && $originalPrice != $newPrice) {
+                // Update the existing ledger entry
+                $existingLedger->credit_amount = $newPrice;
+                
+                // Update description
+                $existingLedger->description = "Order #{$order->id} - {$order->product_type} - {$order->tanker_size} tanker";
+                
+                // Check if order_date changed
+                $originalOrderDate = $order->getOriginal('order_date');
+                $newOrderDate = $order->order_date;
+                if ($originalOrderDate != $newOrderDate) {
+                    $existingLedger->transaction_date = $newOrderDate ?? now();
+                }
+                
+                // Save the ledger entry first
+                $existingLedger->saveQuietly();
+                
+                // Recalculate balances for all ledger entries for this customer
+                if ($order->customer_id) {
+                    static::recalculateCustomerLedgerBalances($order->customer_id);
+                }
+            }
+            // Scenario 4: Payment type stayed as credit/on_account, price unchanged, but other fields changed
+            elseif ($wasCredit && $isNowCredit && $existingLedger && $originalPrice == $newPrice) {
+                // Update description
+                $existingLedger->description = "Order #{$order->id} - {$order->product_type} - {$order->tanker_size} tanker";
+                
+                // Check if order_date changed
+                $originalOrderDate = $order->getOriginal('order_date');
+                $newOrderDate = $order->order_date;
+                if ($originalOrderDate != $newOrderDate) {
+                    $existingLedger->transaction_date = $newOrderDate ?? now();
+                    $existingLedger->saveQuietly();
+                    // Recalculate if date changed (affects chronological order)
+                    if ($order->customer_id) {
+                        static::recalculateCustomerLedgerBalances($order->customer_id);
+                    }
+                } else {
+                    $existingLedger->saveQuietly();
+                }
+            }
+        });
+
         static::deleting(function ($order) {
             // Delete related ledger entries when order is deleted
             $relatedLedgers = Ledger::where('order_id', $order->id)->get();

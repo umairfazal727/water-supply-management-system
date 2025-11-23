@@ -52,12 +52,25 @@ class Customer extends Model
 
     /**
      * Get current balance including opening balance and all ledger entries
+     * Uses the same calculation logic as CustomerLedgerView for consistency
      */
     public function getCurrentBalance()
     {
-        $openingBalance = (float) $this->opening_balance;
-        $ledgerBalance = Ledger::getCustomerBalance($this->id);
-        return $openingBalance + $ledgerBalance;
+        $openingBalance = (float) ($this->opening_balance ?? 0);
+        
+        // Get all ledger entries for this customer
+        $ledgerEntries = Ledger::where('customer_id', $this->id)
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+        
+        // Calculate totals
+        $totalDebit = $ledgerEntries->sum('debit_amount');
+        $totalCredit = $ledgerEntries->sum('credit_amount');
+        
+        // Calculate final balance: opening balance + debits - credits
+        // (debits reduce what customer owes, credits increase what customer owes)
+        return $openingBalance + $totalDebit - $totalCredit;
     }
 
     /**
