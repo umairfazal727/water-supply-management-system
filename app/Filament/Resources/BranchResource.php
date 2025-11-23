@@ -39,6 +39,11 @@ class BranchResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withoutGlobalScope('active');
+    }
+
     public static function table(Table $table): Table
     {
         return $table
