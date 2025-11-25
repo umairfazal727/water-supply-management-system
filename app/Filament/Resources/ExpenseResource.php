@@ -24,6 +24,8 @@ class ExpenseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
+    protected static ?int $navigationSort = 8;
+
     public static function form(Form $form): Form
     {
         $currency_symbol = config('settings.currency_symbol');

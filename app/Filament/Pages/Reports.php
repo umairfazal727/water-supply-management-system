@@ -17,7 +17,7 @@ class Reports extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Reports';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     protected static string $view = 'filament.pages.reports';
 

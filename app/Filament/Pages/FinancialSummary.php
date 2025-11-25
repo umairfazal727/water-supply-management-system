@@ -23,7 +23,7 @@ class FinancialSummary extends Page implements HasForms
     protected static ?string $navigationLabel = 'Financial Summary';
     protected static string $view = 'filament.pages.financial-summary';
     protected static ?string $title = 'Financial Summary';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 4;
 
     public bool $isLoading = false;
     public ?array $data = [];
