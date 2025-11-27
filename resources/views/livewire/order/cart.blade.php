@@ -23,6 +23,36 @@
         @if($selectedCustomer)
             <!-- Order Form -->
             <form wire:submit.prevent="createOrder">
+                <!-- Multiple Orders Option -->
+                <div class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <input type="checkbox" 
+                               id="createMultiple" 
+                               wire:model.live="createMultiple"
+                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="createMultiple" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Create Multiple Orders with Same Entries
+                        </label>
+                    </div>
+                    
+                    @if($createMultiple)
+                        <div class="mt-3">
+                            <label for="orderCount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Number of Orders to Create (2-10)
+                            </label>
+                            <input type="number" 
+                                   id="orderCount"
+                                   wire:model="orderCount"
+                                   min="2"
+                                   max="10"
+                                   class="block w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                One order will be created with current entries. Additional {{ $orderCount - 1 }} duplicate order(s) will be created.
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <!-- Customer & Vehicle Information -->
                     <div class="space-y-4">
@@ -42,7 +72,8 @@
                             </label>
                             <input type="text" 
                                    wire:model="companyName" 
-                                   class="mt-1 block w-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
 
                         <div>
@@ -51,7 +82,8 @@
                             </label>
                             <input type="text" 
                                    wire:model="vehicleNumber" 
-                                   class="mt-1 block w-full border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-2 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
 
                         <div>
@@ -60,14 +92,16 @@
                             </label>
                             <input type="text" 
                                    wire:model="driverName" 
-                                   class="mt-1 block w-full border-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white font-semibold @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanker Size</label>
                             <input type="text" 
                                    wire:model="tankerSize" 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
                     </div>
 
@@ -78,7 +112,8 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Type</label>
                             <select wire:model="productType" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    @if($createMultiple) disabled @endif
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed @endif">
                                 <option value="sweet_water">Sweet Water</option>
                                 <option value="salt_water">Salt Water</option>
                             </select>
@@ -89,13 +124,15 @@
                             <input type="number" 
                                    step="0.01"
                                    wire:model="price" 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Type</label>
                             <select wire:model="paymentType" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    @if($createMultiple) disabled @endif
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed @endif">
                                 <option value="cash">Cash</option>
                                 <option value="credit">Credit</option>
                                 <option value="bank_transfer">Bank Transfer</option>
@@ -106,7 +143,8 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Branch</label>
                             <select wire:model="branchId" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    @if($createMultiple) disabled @endif
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed @endif">
                                 <option value="">Select Branch</option>
                                 @foreach(\App\Models\Branch::all() as $branch)
                                     <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -118,7 +156,8 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date & Time</label>
                             <input type="datetime-local" 
                                    wire:model="orderDate" 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                   @if($createMultiple) readonly @endif
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800 @endif">
                         </div>
                     </div>
                 </div>
@@ -126,9 +165,22 @@
                 <!-- Total Amount Display -->
                 <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
                     <div class="flex justify-between items-center">
-                        <span class="text-lg font-medium text-gray-900 dark:text-white">Total Amount:</span>
-                        <span class="text-2xl font-bold text-green-600">{{ $currency_symbol }}{{ number_format($price, 2) }}</span>
+                        <span class="text-lg font-medium text-gray-900 dark:text-white">
+                            @if($createMultiple)
+                                Total Amount ({{ $orderCount }} orders):
+                            @else
+                                Total Amount:
+                            @endif
+                        </span>
+                        <span class="text-2xl font-bold text-green-600">
+                            {{ $currency_symbol }}{{ number_format($price * ($createMultiple ? $orderCount : 1), 2) }}
+                        </span>
                     </div>
+                    @if($createMultiple)
+                        <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            {{ $currency_symbol }}{{ number_format($price, 2) }} per order × {{ $orderCount }} orders
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Action Buttons -->
@@ -136,7 +188,13 @@
                     <button type="submit" 
                             wire:loading.attr="disabled"
                             class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center">
-                        <span wire:loading.remove wire:target="createOrder">Create Order</span>
+                        <span wire:loading.remove wire:target="createOrder">
+                            @if($createMultiple)
+                                Create {{ $orderCount }} Orders
+                            @else
+                                Create Order
+                            @endif
+                        </span>
                         <span wire:loading wire:target="createOrder" class="flex items-center">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

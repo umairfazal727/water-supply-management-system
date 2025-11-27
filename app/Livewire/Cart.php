@@ -24,6 +24,7 @@ class Cart extends Component
     public $orderDate;
     public $paymentType = 'cash';
     public $branchId;
+    public $orderCount = 1;
     private $currency_symbol;
 
     public function mount()
@@ -81,8 +82,13 @@ class Cart extends Component
             return;
         }
 
-        // Create the order
-        $order = Order::create([
+        // Validate order count
+        if ($this->orderCount < 1 || $this->orderCount > 10) {
+            session()->flash('error', 'Order count must be between 1 and 10.');
+            return;
+        }
+
+        $orderData = [
             'customer_id' => $customerId,
             'vehicle_number' => $this->vehicleNumber,
             'driver_name' => $this->driverName,
@@ -94,17 +100,26 @@ class Cart extends Component
             'payment_type' => $this->paymentType,
             'branch_id' => $this->branchId,
             'order_date' => $this->orderDate,
-        ]);
+        ];
 
-        session()->flash('success', 'Order created successfully!');
+        $ordersCreated = [];
+        
+        // Create multiple orders in a loop
+        for ($i = 0; $i < $this->orderCount; $i++) {
+            $order = Order::create($orderData);
+            $ordersCreated[] = $order;
+        }
+
+        session()->flash('success', "{$this->orderCount} orders created successfully!");
         
         // Check if order's company_name matches "REEM AL FALAJ TR." (case-insensitive, trimmed)
-        // $trimmedCompanyName = trim($order->company_name);
-        if ($order->company_name === 'REEM AL FALAJ TR.') {
+        // For multiple orders, check the first order
+        $firstOrder = $ordersCreated[0];
+        if ($firstOrder->company_name === 'REEM AL FALAJ TR.') {
             // Clear the customer selection
             $this->clearCustomer();
-            // Redirect to delivery creation with order_id
-            return $this->redirect(url('admin/deliveries/create?order_id=' . $order->id));
+            // Redirect to delivery creation with order_id (first order)
+            return $this->redirect(url('admin/deliveries/create?order_id=' . $firstOrder->id));
         }
         
         // Clear the customer selection
@@ -133,6 +148,7 @@ class Cart extends Component
         $this->paymentType = 'cash';
         $this->branchId = null;
         $this->orderDate = now()->format('Y-m-d\TH:i');
+        $this->orderCount = 1;
     }
 
 }
