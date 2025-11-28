@@ -34,9 +34,9 @@ class DashboardStatsWidget extends StatsOverviewWidget
                 ->sum('price');
             
             // Deliveries stats for this branch
-            $branchDeliveries = Delivery::where('branch_id', $branch->id)
-                ->whereDate('delivery_date', today())
-                ->count();
+            // $branchDeliveries = Delivery::where('branch_id', $branch->id)
+            //     ->whereDate('delivery_date', today())
+            //     ->count();
             
             $branchExpenses = Expense::where('branch_id', $branch->id)
                 ->where('expense_type', 'general')
@@ -50,10 +50,10 @@ class DashboardStatsWidget extends StatsOverviewWidget
                 ->color('primary')
                 ->chart([7, 3, 4, 5, 6, 3, 5]);
             
-            $stats[] = Stat::make($branch->name . ' - Deliveries', $branchDeliveries)
-                ->description('Today\'s deliveries')
-                ->descriptionIcon('heroicon-m-truck')
-                ->color('success');
+            // $stats[] = Stat::make($branch->name . ' - Deliveries', $branchDeliveries)
+            //     ->description('Today\'s deliveries')
+            //     ->descriptionIcon('heroicon-m-truck')
+            //     ->color('success');
             
             $stats[] = Stat::make($branch->name . ' - Expenses', 'AED ' . number_format($branchExpenses, 2))
                 ->description('Today\'s expenses')

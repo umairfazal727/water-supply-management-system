@@ -134,7 +134,7 @@
                                     @if($createMultiple) disabled @endif
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @if($createMultiple) opacity-60 cursor-not-allowed @endif">
                                 <option value="cash">Cash</option>
-                                <option value="credit">Credit</option>
+                                <option value="credit" selected>Credit</option>
                                 <option value="bank_transfer">Bank Transfer</option>
                                 <option value="on_account">On Account (Deferred)</option>
                             </select>

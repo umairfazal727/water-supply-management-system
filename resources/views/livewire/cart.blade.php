@@ -32,11 +32,11 @@
                         <input type="number" 
                                id="orderCount" 
                                wire:model="orderCount" 
-                               min="2" 
+                               min="1" 
                                max="10"
                                class="block w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            {{ $orderCount }} orders will be created with the same entries.
+                             order will be created with the same entries.
                         </p>
                     </div>
                 </div>
@@ -101,8 +101,8 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Type</label>
                             <select wire:model="paymentType"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="credit" >Credit</option>
                                 <option value="cash">Cash</option>
-                                <option value="credit">Credit</option>
                             </select>
                         </div>
                         <div>
@@ -128,14 +128,14 @@
                 <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-medium text-gray-900 dark:text-white">
-                            Total Amount ({{ $orderCount }} orders):
+                            Total Amount:
                         </span>
                         <span class="text-2xl font-bold text-green-600">
                             {{ $currency_symbol }}{{ number_format($price * $orderCount, 2) }}
                         </span>
                     </div>
                     <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                        {{ $currency_symbol }}{{ number_format($price, 2) }} per order × {{ $orderCount }} orders
+                        {{-- {{ $currency_symbol }}{{ number_format($price, 2) }} per order × {{ $orderCount }} orders --}}
                     </div>
                 </div>
 
@@ -144,7 +144,7 @@
                     <button type="submit" wire:loading.attr="disabled"
                         class="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded flex items-center">
                         <span wire:loading.remove wire:target="createOrder">
-                            Create {{ $orderCount }} Orders
+                            Create Orders
                         </span>
                         <span wire:loading wire:target="createOrder" class="flex items-center">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
