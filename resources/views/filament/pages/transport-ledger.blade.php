@@ -24,6 +24,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delivery No</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Water Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Trip Size</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
@@ -35,6 +36,15 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $d->delivery_date?->format('M d, Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $d->delivery_number }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $d->deliveryCustomer?->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @if($d->order && $d->order->product_type)
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $d->order->product_type === 'sweet_water' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' }}">
+                                                {{ $d->order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water' }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400">N/A</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $d->trip_size }} gal</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($d->total_amount, 2) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">{{ ucfirst(str_replace('_',' ', $d->status)) }}</td>
@@ -43,7 +53,7 @@
                         </tbody>
                         <tfoot class="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <td colspan="3" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">Total:</td>
+                                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-white">Total:</td>
                                 <td class="px-6 py-3 text-left text-sm font-medium text-gray-900 dark:text-white">{{ $summary['count'] ?? 0 }} trips</td>
                                 <td class="px-6 py-3 text-left text-sm font-bold text-green-600">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($summary['total_amount'] ?? 0, 2) }}</td>
                                 <td></td>

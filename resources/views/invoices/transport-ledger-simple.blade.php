@@ -95,6 +95,7 @@
                 <th>Date</th>
                 <th>Delivery No</th>
                 <th>Customer</th>
+                <th>Water Type</th>
                 <th>Trip Size</th>
                 <th>Amount</th>
                 <th>Payment Method</th>
@@ -107,6 +108,13 @@
                     <td>{{ $d->delivery_date?->format('M d, Y') }}</td>
                     <td>{{ $d->delivery_number }}</td>
                     <td>{{ $d->deliveryCustomer?->name }}</td>
+                    <td>
+                        @if($d->order && $d->order->product_type)
+                            {{ $d->order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water' }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
                     <td>{{ $d->trip_size }} gal</td>
                     <td>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($d->total_amount, 2) }}</td>
                     <td>{{ ucfirst(str_replace('_',' ', $d->payment_method)) }}</td>
@@ -116,7 +124,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3">Total</td>
+                <td colspan="4">Total</td>
                 <td>{{ $summary['count'] ?? 0 }} trips</td>
                 <td>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($summary['total_amount'] ?? 0, 2) }}</td>
                 <td></td>

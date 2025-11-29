@@ -23,7 +23,7 @@ class Cart extends Component
     public $productType = 'sweet_water';
     public $price = 0;
     public $orderDate;
-    public $paymentType = 'cash';
+    public $paymentType = 'credit';
     public $branchId;
     public $createMultiple = false;
     public $orderCount = 2;
@@ -158,7 +158,7 @@ class Cart extends Component
         $this->tankerSize = '';
         $this->productType = 'sweet_water';
         $this->price = 0;
-        $this->paymentType = 'cash';
+        $this->paymentType = 'credit';
         $this->branchId = null;
         $this->orderDate = now()->format('Y-m-d\TH:i');
         $this->createMultiple = false;

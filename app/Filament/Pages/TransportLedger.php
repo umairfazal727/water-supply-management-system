@@ -46,7 +46,7 @@ class TransportLedger extends Page
 
     public function generate()
     {
-        $query = Delivery::with(['deliveryCustomer', 'vehicle', 'driver', 'branch'])
+        $query = Delivery::with(['deliveryCustomer', 'vehicle', 'driver', 'branch', 'order'])
             ->whereBetween('delivery_date', [$this->startDate->toDateString(), $this->endDate->toDateString()]);
 
         if ($this->deliveryCustomerId) {

@@ -26,7 +26,7 @@
         </div>
     @elseif($results->count() > 0)
         <!-- Summary Cards -->
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
                 <div class="text-sm text-gray-500 dark:text-gray-400">Total Orders</div>
                 <div class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
@@ -49,6 +49,12 @@
                 <div class="text-sm text-gray-500 dark:text-gray-400">Credit</div>
                 <div class="text-2xl font-bold text-orange-600 mt-1">
                     AED {{ number_format($summary['total_credit'], 2) }}
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
+                <div class="text-sm text-gray-500 dark:text-gray-400">Credit Received</div>
+                <div class="text-2xl font-bold text-purple-600 mt-1">
+                    AED {{ number_format($summary['credit_received'], 2) }}
                 </div>
             </div>
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
@@ -94,6 +100,9 @@
                                     Credit
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Credit Received
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Expenses
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -118,6 +127,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-orange-600">
                                         AED {{ number_format($result['credit'], 2) }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-purple-600">
+                                        AED {{ number_format($result['credit_received'] ?? 0, 2) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-red-600">
                                         AED {{ number_format($result['expenses'], 2) }}
@@ -144,6 +156,9 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right font-bold text-orange-600">
                                     AED {{ number_format($summary['total_credit'], 2) }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-right font-bold text-purple-600">
+                                    AED {{ number_format($summary['credit_received'], 2) }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-right font-bold text-red-600">
                                     AED {{ number_format($summary['total_expenses'], 2) }}

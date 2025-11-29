@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 use App\Models\Order;
 use App\Models\Expense;
 use App\Models\Branch;
+use App\Models\Payment;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -35,6 +36,7 @@ class FinancialSummary extends Page implements HasForms
         'total_cash' => 0,
         'total_credit' => 0,
         'total_expenses' => 0,
+        'credit_received' => 0,
         'profit' => 0,
     ];
 
@@ -156,6 +158,25 @@ class FinancialSummary extends Page implements HasForms
 
         $expenses = $expensesQuery->get();
 
+        // Query payments for credit orders within date range
+        $paymentsQuery = Payment::whereHas('order', function ($query) use ($fromDate, $toDate, $branchIds) {
+            $query->whereIn('payment_type', ['credit', 'on_account'])
+                ->whereBetween('order_date', [
+                    \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                    \Carbon\Carbon::parse($toDate)->endOfDay()
+                ]);
+            
+            if (!empty($branchIds)) {
+                $query->whereIn('branch_id', $branchIds);
+            }
+        })
+        ->whereBetween('created_at', [
+            \Carbon\Carbon::parse($fromDate)->startOfDay(),
+            \Carbon\Carbon::parse($toDate)->endOfDay()
+        ]);
+
+        $payments = $paymentsQuery->get();
+
         // Group by date
         $resultsByDate = [];
 
@@ -215,11 +236,39 @@ class FinancialSummary extends Page implements HasForms
                     'revenue' => 0,
                     'cash' => 0,
                     'credit' => 0,
+                    'credit_received' => 0,
                     'expenses' => 0,
                 ];
             }
 
             $resultsByDate[$date]['expenses'] += (float) ($expense->amount ?? 0);
+        }
+
+        // Process payments by date (credit received)
+        foreach ($payments as $payment) {
+            if ($payment->created_at === null) {
+                continue;
+            }
+            
+            $paymentDate = is_string($payment->created_at)
+                ? \Carbon\Carbon::parse($payment->created_at)
+                : $payment->created_at;
+            
+            $date = $paymentDate->format('Y-m-d');
+            
+            if (!isset($resultsByDate[$date])) {
+                $resultsByDate[$date] = [
+                    'date' => $date,
+                    'orders' => 0,
+                    'revenue' => 0,
+                    'cash' => 0,
+                    'credit' => 0,
+                    'credit_received' => 0,
+                    'expenses' => 0,
+                ];
+            }
+
+            $resultsByDate[$date]['credit_received'] += (float) ($payment->amount ?? 0);
         }
 
         // Calculate profit for each date
@@ -249,12 +298,17 @@ class FinancialSummary extends Page implements HasForms
             return (float) ($expense->amount ?? 0);
         });
         
+        $totalCreditReceived = $payments->sum(function ($payment) {
+            return (float) ($payment->amount ?? 0);
+        });
+        
         $this->summary = [
             'total_orders' => $orders->count(),
             'total_revenue' => $totalRevenue,
             'total_cash' => $totalCash,
             'total_credit' => $totalCredit,
             'total_expenses' => $totalExpenses,
+            'credit_received' => $totalCreditReceived,
             'profit' => $totalRevenue - $totalExpenses,
         ];
 

@@ -95,6 +95,7 @@
                 <th>Date</th>
                 <th>Delivery No</th>
                 <th>Customer</th>
+                <th>Water Type</th>
                 <th>Vehicle</th>
                 <th>Driver</th>
                 <th>Site</th>
@@ -111,6 +112,13 @@
                     <td>{{ $d->delivery_date?->format('M d, Y') }}</td>
                     <td>{{ $d->delivery_number }}</td>
                     <td>{{ $d->deliveryCustomer?->name }}</td>
+                    <td>
+                        @if($d->order && $d->order->product_type)
+                            {{ $d->order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water' }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
                     <td>{{ $d->order?->vehicle_number ?? 'N/A' }}</td>
                     <td>{{ $d->order?->driver_name ?? 'N/A' }}</td>
                     <td>{{ $d->customer_site ?? 'N/A' }}</td>
@@ -124,7 +132,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="8">Total</td>
+                <td colspan="9">Total</td>
                 <td>{{ $summary['count'] ?? 0 }} trips</td>
                 <td>{{ config('settings.currency_symbol', 'AED') }}{{ number_format($summary['total_amount'] ?? 0, 2) }}</td>
                 <td></td>
