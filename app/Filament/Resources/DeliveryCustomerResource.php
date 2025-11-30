@@ -67,12 +67,12 @@ class DeliveryCustomerResource extends Resource
                 
                 Forms\Components\Section::make('Pricing Information')
                     ->schema([
-                        Forms\Components\TextInput::make('rate')
-                            ->numeric()
-                            ->default(0.00)
-                            ->prefix('AED')
-                            ->step(0.01)
-                            ->label('Rate'),
+                        // Forms\Components\TextInput::make('rate')
+                        //     ->numeric()
+                        //     ->default(0.00)
+                        //     ->prefix('AED')
+                        //     ->step(0.01)
+                        //     ->label('Rate'),
                         Forms\Components\TextInput::make('sweet_water_price')
                             ->numeric()
                             ->default(0.00)
@@ -124,10 +124,10 @@ class DeliveryCustomerResource extends Resource
                     ->money($currency_symbol)
                     ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray'))
                     ->sortable(false),
-                Tables\Columns\TextColumn::make('rate')
-                    ->money($currency_symbol)
-                    ->sortable()
-                    ->toggleable(),
+                // Tables\Columns\TextColumn::make('rate')
+                //     ->money($currency_symbol)
+                //     ->sortable()
+                //     ->toggleable(),
                 Tables\Columns\TextColumn::make('sweet_water_price')
                     ->money($currency_symbol)
                     ->sortable()

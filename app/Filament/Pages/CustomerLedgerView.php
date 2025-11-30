@@ -41,10 +41,22 @@ class CustomerLedgerView extends Page implements HasForms, HasActions
     public function mount(): void
     {
         $this->ledgerEntries = collect([]);
+        
+        // Get parameters from URL query string
+        $customerId = request()->query('customer_id');
+        $fromDate = request()->query('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $toDate = request()->query('to_date', now()->format('Y-m-d'));
+        
         $this->form->fill([
-            'from_date' => now()->startOfMonth()->format('Y-m-d'),
-            'to_date' => now()->format('Y-m-d'),
+            'customer_id' => $customerId,
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
         ]);
+        
+        // Load ledger data if customer_id is provided
+        if ($customerId) {
+            $this->refreshLedgerData();
+        }
     }
 
     public function form(Form $form): Form

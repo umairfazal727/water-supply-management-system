@@ -155,6 +155,16 @@ class CustomerResource extends Resource
             ])
             ->filters([])
             ->actions([
+                Tables\Actions\Action::make('view_ledger')
+                    ->label('View Ledger')
+                    ->icon('heroicon-o-document-text')
+                    ->color('info')
+                    ->url(function ($record) {
+                        $fromDate = now()->startOfMonth()->format('Y-m-d');
+                        $toDate = now()->format('Y-m-d');
+                        return \App\Filament\Pages\CustomerLedgerView::getUrl() . '?customer_id=' . $record->id . '&from_date=' . $fromDate . '&to_date=' . $toDate;
+                    })
+                    ->openUrlInNewTab(false),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('add_payment')
                     ->label('Add Payment')

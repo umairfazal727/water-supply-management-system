@@ -39,12 +39,25 @@ class DeliveryResource extends Resource
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                    ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                         if ($state) {
                             $customer = \App\Models\DeliveryCustomer::find($state);
                             if ($customer) {
                                 $set('customer_site', $customer->address);
                                 $set('customer_location', $customer->delivery_location);
+                                
+                                // If order is already selected, update rate based on order's product_type
+                                $orderId = $get('order_id');
+                                if ($orderId) {
+                                    $order = \App\Models\Order::find($orderId);
+                                    if ($order) {
+                                        if ($order->product_type === 'sweet_water') {
+                                            $set('total_amount', $customer->sweet_water_price ?? 0);
+                                        } elseif ($order->product_type === 'salt_water') {
+                                            $set('total_amount', $customer->salt_water_price ?? 0);
+                                        }
+                                    }
+                                }
                             }
                         }
                     })
@@ -58,11 +71,32 @@ class DeliveryResource extends Resource
                         ->searchable()
                         ->preload()
                         ->live()
-                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                             if ($state) {
                                 $order = \App\Models\Order::find($state);
                                 if ($order) {
-                                    $set('total_amount', $order->total_amount);
+                                    // Set trip_size from order's tanker_size
+                                    if ($order->tanker_size) {
+                                        $set('trip_size', $order->tanker_size);
+                                    }
+                                    
+                                    // Set rate based on order's product_type and delivery customer's price
+                                    $deliveryCustomerId = $get('delivery_customer_id');
+                                    if ($deliveryCustomerId) {
+                                        $deliveryCustomer = \App\Models\DeliveryCustomer::find($deliveryCustomerId);
+                                        if ($deliveryCustomer) {
+                                            if ($order->product_type === 'sweet_water') {
+                                                $set('rate_per_gallon', $deliveryCustomer->sweet_water_price ?? 0);
+                                            } elseif ($order->product_type === 'salt_water') {
+                                                $set('rate_per_gallon', $deliveryCustomer->salt_water_price ?? 0);
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Set total_amount
+                                    if ($order->total_amount) {
+                                        $set('total_amount', $order->total_amount);
+                                    }
                                 }
                             }
                         })
@@ -86,6 +120,12 @@ class DeliveryResource extends Resource
                     ->required()
                     ->numeric()
                     ->suffix('gallons'),
+                Forms\Components\TextInput::make('rate_per_gallon')
+                    ->label('Rate per Gallon')
+                    ->numeric()
+                    ->prefix($currency_symbol)
+                    ->step(0.01)
+                    ->suffix('per gallon'),
                 Forms\Components\TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -108,7 +148,7 @@ class DeliveryResource extends Resource
                         'cancelled' => 'Cancelled',
                     ])
                     ->required()
-                    ->default('scheduled'),
+                    ->default('delivered'),
                 Forms\Components\Textarea::make('notes')
                     ->maxLength(65535),
                 Forms\Components\FileUpload::make('delivery_photos')

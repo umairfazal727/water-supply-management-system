@@ -125,7 +125,7 @@ class Cart extends Component
             session()->flash('success', 'Order created successfully!');
         }
         
-        // Check if order's company_name matches "REEM AL FALAJ TR." (case-insensitive, trimmed)
+        // Check if order's company_name matches "REEM AL FALAJ TR."
         // For multiple orders, check the first order
         $firstOrder = $ordersCreated[0];
         if ($firstOrder->company_name == 'REEM AL FALAJ TR.') {
@@ -135,11 +135,8 @@ class Cart extends Component
             return $this->redirect(url('admin/deliveries/create?order_id=' . $firstOrder->id));
         }
         
-        // Clear the customer selection
+        // Clear the customer selection and stay on POS page
         $this->clearCustomer();
-        
-        // Redirect to orders list
-        return $this->redirect(url('admin/orders'));
     }
 
     public function clearCustomer()

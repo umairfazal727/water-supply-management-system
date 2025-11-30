@@ -2,8 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ExpenseResource\Pages;
-use App\Filament\Resources\ExpenseResource\RelationManagers;
+use App\Filament\Resources\TransportExpenseResource\Pages;
 use App\Models\Expense;
 use App\Models\Branch;
 use App\Models\ExpenseCategory;
@@ -18,13 +17,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ExpenseResource extends Resource
+class TransportExpenseResource extends Resource
 {
     protected static ?string $model = Expense::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
-
-    protected static ?int $navigationSort = 8;
+    
+    protected static ?string $navigationLabel = 'Transport Expenses';
+    
+    protected static ?string $navigationGroup = 'Water Transport';
+    
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -76,16 +79,16 @@ class ExpenseResource extends Resource
                     ->default('cash'),
                 Forms\Components\TextInput::make('reference_number')
                     ->maxLength(255),
-                // Forms\Components\Select::make('driver_id')
-                //     ->label('Driver')
-                //     ->options(Driver::where('is_active', true)->pluck('name', 'id'))
-                //     ->searchable()
-                //     ->preload(),
-                // Forms\Components\Select::make('vehicle_id')
-                //     ->label('Vehicle')
-                //     ->options(Vehicle::where('is_active', true)->pluck('vehicle_number', 'id'))
-                //     ->searchable()
-                //     ->preload(),
+                Forms\Components\Select::make('driver_id')
+                    ->label('Driver')
+                    ->options(Driver::where('is_active', true)->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\Select::make('vehicle_id')
+                    ->label('Vehicle')
+                    ->options(Vehicle::where('is_active', true)->pluck('vehicle_number', 'id'))
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Toggle::make('is_approved')
                     ->label('Approved')
                     ->default(true),
@@ -186,6 +189,7 @@ class ExpenseResource extends Resource
             ])
             ->defaultSort('id', 'desc');
     }
+    
     public static function getRelations(): array
     {
         return [
@@ -196,9 +200,15 @@ class ExpenseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExpenses::route('/'),
-            'create' => Pages\CreateExpense::route('/create'),
-            'edit' => Pages\EditExpense::route('/{record}/edit'),
+            'index' => Pages\ListTransportExpenses::route('/'),
+            'create' => Pages\CreateTransportExpense::route('/create'),
+            'edit' => Pages\EditTransportExpense::route('/{record}/edit'),
         ];
     }
+    
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('expense_type', 'transport');
+    }
 }
+
