@@ -250,7 +250,7 @@
                         {{ $order->product_type === 'sweet_water' ? 'Sweet Water' : 'Salt Water' }}
                     </span>
                 </td>
-                <td>{{ $order->quantity ?? 'N/A' }}</td>
+                <td>{{ $order->tanker_size ?? 'N/A' }}</td>
                 <td class="currency">{{ config('settings.currency_symbol', 'AED') }}{{ number_format($order->total_price, 2) }}</td>
                 <td>{{ ucfirst($order->payment_type ?? 'N/A') }}</td>
                 <td>{{ $order->branch?->name ?? 'N/A' }}</td>

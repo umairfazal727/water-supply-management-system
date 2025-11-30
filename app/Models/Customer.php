@@ -23,6 +23,7 @@ class Customer extends Model
         'product_type', // sweet_water or salt_water
         'price',
         'opening_balance',
+        'is_type_credit',
     ];
 
     public function getAvatarUrl()
@@ -49,6 +50,10 @@ class Customer extends Model
     {
         return $this->hasMany(Ledger::class);
     }
+
+    protected $casts = [
+        'is_type_credit' => 'boolean',
+    ];
 
     /**
      * Get current balance including opening balance and all ledger entries

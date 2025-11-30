@@ -28,11 +28,6 @@ class DeliveryResource extends Resource
         $currency_symbol = config('settings.currency_symbol');
         return $form
             ->schema([
-                Forms\Components\Select::make('branch_id')
-                    ->relationship('branch', 'name')
-                    ->required()
-                    ->searchable()
-                    ->preload(),
                     Forms\Components\Select::make('delivery_customer_id')
                     ->relationship('deliveryCustomer', 'name')
                     ->required()
@@ -46,7 +41,7 @@ class DeliveryResource extends Resource
                                 $set('customer_site', $customer->address);
                                 $set('customer_location', $customer->delivery_location);
                                 
-                                // If order is already selected, update rate based on order's product_type
+                                // If order is already selected, update total_amount based on order's product_type
                                 $orderId = $get('order_id');
                                 if ($orderId) {
                                     $order = \App\Models\Order::find($orderId);
@@ -80,22 +75,19 @@ class DeliveryResource extends Resource
                                         $set('trip_size', $order->tanker_size);
                                     }
                                     
-                                    // Set rate based on order's product_type and delivery customer's price
-                                    $deliveryCustomerId = $get('delivery_customer_id');
-                                    if ($deliveryCustomerId) {
-                                        $deliveryCustomer = \App\Models\DeliveryCustomer::find($deliveryCustomerId);
-                                        if ($deliveryCustomer) {
-                                            if ($order->product_type === 'sweet_water') {
-                                                $set('rate_per_gallon', $deliveryCustomer->sweet_water_price ?? 0);
-                                            } elseif ($order->product_type === 'salt_water') {
-                                                $set('rate_per_gallon', $deliveryCustomer->salt_water_price ?? 0);
-                                            }
-                                        }
-                                    }
-                                    
                                     // Set total_amount
                                     if ($order->total_amount) {
                                         $set('total_amount', $order->total_amount);
+                                    }
+                                    
+                                    // Auto-fill delivery_date if not set
+                                    if (!$get('delivery_date')) {
+                                        $set('delivery_date', now());
+                                    }
+                                    
+                                    // Auto-fill delivery_number if not set
+                                    if (!$get('delivery_number')) {
+                                        $set('delivery_number', 'DEL-' . date('Ymd') . '-' . rand(1000, 9999));
                                     }
                                 }
                             }
@@ -106,12 +98,10 @@ class DeliveryResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255)
-                    ->default('DEL-' . date('Ymd') . '-' . rand(1000, 9999)),
+                    ->default(fn () => 'DEL-' . date('Ymd') . '-' . rand(1000, 9999)),
                 Forms\Components\DatePicker::make('delivery_date')
                     ->required()
-                    ->default(now()),
-                Forms\Components\TimePicker::make('delivery_time')
-                    ->default(now()),
+                    ->default(fn () => now()),
                 Forms\Components\TextInput::make('customer_site')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('customer_location')
@@ -120,12 +110,6 @@ class DeliveryResource extends Resource
                     ->required()
                     ->numeric()
                     ->suffix('gallons'),
-                Forms\Components\TextInput::make('rate_per_gallon')
-                    ->label('Rate per Gallon')
-                    ->numeric()
-                    ->prefix($currency_symbol)
-                    ->step(0.01)
-                    ->suffix('per gallon'),
                 Forms\Components\TextInput::make('total_amount')
                     ->required()
                     ->numeric()
@@ -139,7 +123,7 @@ class DeliveryResource extends Resource
                         'check' => 'Check',
                     ])
                     ->required()
-                    ->default('cash'),
+                    ->default('credit'),
                 Forms\Components\Select::make('status')
                     ->options([
                         'scheduled' => 'Scheduled',
@@ -174,9 +158,6 @@ class DeliveryResource extends Resource
                 Tables\Columns\TextColumn::make('delivery_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('delivery_time')
-                    ->time()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('customer_site')
                     ->searchable()
                     ->toggleable(),
@@ -204,17 +185,12 @@ class DeliveryResource extends Resource
                         'bank_transfer' => 'info',
                         'check' => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('branch.name')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('branch')
-                    ->relationship('branch', 'name'),
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'scheduled' => 'Scheduled',

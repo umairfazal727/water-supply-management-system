@@ -17,7 +17,6 @@ class Delivery extends Model
         'order_id',
         'delivery_number',
         'delivery_date',
-        'delivery_time',
         'customer_site',
         'customer_location',
         'trip_size',
@@ -30,7 +29,6 @@ class Delivery extends Model
 
     protected $casts = [
         'delivery_date' => 'date',
-        'delivery_time' => 'datetime:H:i',
         'total_amount' => 'decimal:2',
         'delivery_photos' => 'array',
     ];

@@ -6,7 +6,7 @@ use Filament\Pages\Page;
 use App\Models\Order;
 use App\Models\Expense;
 use App\Models\Branch;
-use App\Models\Payment;
+use App\Models\Ledger;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -158,24 +158,26 @@ class FinancialSummary extends Page implements HasForms
 
         $expenses = $expensesQuery->get();
 
-        // Query payments for credit orders within date range
-        $paymentsQuery = Payment::whereHas('order', function ($query) use ($fromDate, $toDate, $branchIds) {
-            $query->whereIn('payment_type', ['credit', 'on_account'])
-                ->whereBetween('order_date', [
-                    \Carbon\Carbon::parse($fromDate)->startOfDay(),
-                    \Carbon\Carbon::parse($toDate)->endOfDay()
-                ]);
-            
-            if (!empty($branchIds)) {
-                $query->whereIn('branch_id', $branchIds);
-            }
-        })
-        ->whereBetween('created_at', [
-            \Carbon\Carbon::parse($fromDate)->startOfDay(),
-            \Carbon\Carbon::parse($toDate)->endOfDay()
-        ]);
+        // Query payment ledger entries (payments received from customers)
+        $paymentLedgersQuery = Ledger::where('transaction_type', 'payment')
+            ->whereNotNull('transaction_date')
+            ->whereBetween('transaction_date', [
+                \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                \Carbon\Carbon::parse($toDate)->endOfDay()
+            ]);
 
-        $payments = $paymentsQuery->get();
+        // Filter by branch if specified (through customer's orders in the date range)
+        if (!empty($branchIds)) {
+            $paymentLedgersQuery->whereHas('customer.orders', function ($query) use ($fromDate, $toDate, $branchIds) {
+                $query->whereIn('branch_id', $branchIds)
+                    ->whereBetween('order_date', [
+                        \Carbon\Carbon::parse($fromDate)->startOfDay(),
+                        \Carbon\Carbon::parse($toDate)->endOfDay()
+                    ]);
+            });
+        }
+
+        $paymentLedgers = $paymentLedgersQuery->get();
 
         // Group by date
         $resultsByDate = [];
@@ -244,15 +246,15 @@ class FinancialSummary extends Page implements HasForms
             $resultsByDate[$date]['expenses'] += (float) ($expense->amount ?? 0);
         }
 
-        // Process payments by date (credit received)
-        foreach ($payments as $payment) {
-            if ($payment->created_at === null) {
+        // Process payment ledger entries by date (credit received)
+        foreach ($paymentLedgers as $ledger) {
+            if ($ledger->transaction_date === null) {
                 continue;
             }
             
-            $paymentDate = is_string($payment->created_at)
-                ? \Carbon\Carbon::parse($payment->created_at)
-                : $payment->created_at;
+            $paymentDate = is_string($ledger->transaction_date)
+                ? \Carbon\Carbon::parse($ledger->transaction_date)
+                : $ledger->transaction_date;
             
             $date = $paymentDate->format('Y-m-d');
             
@@ -268,7 +270,8 @@ class FinancialSummary extends Page implements HasForms
                 ];
             }
 
-            $resultsByDate[$date]['credit_received'] += (float) ($payment->amount ?? 0);
+            // Payment received is stored as debit_amount in ledger
+            $resultsByDate[$date]['credit_received'] += (float) ($ledger->debit_amount ?? 0);
         }
 
         // Calculate profit for each date
@@ -298,8 +301,8 @@ class FinancialSummary extends Page implements HasForms
             return (float) ($expense->amount ?? 0);
         });
         
-        $totalCreditReceived = $payments->sum(function ($payment) {
-            return (float) ($payment->amount ?? 0);
+        $totalCreditReceived = $paymentLedgers->sum(function ($ledger) {
+            return (float) ($ledger->debit_amount ?? 0);
         });
         
         $this->summary = [

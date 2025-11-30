@@ -17,6 +17,14 @@ class CreateDelivery extends CreateRecord
         // Pre-fill form with order_id from query parameters
         $orderId = request()->query('order_id');
 
+        // Always set default values
+        $this->form->fill([
+            'delivery_date' => now(),
+            'delivery_number' => 'DEL-' . date('Ymd') . '-' . rand(1000, 9999),
+            'payment_method' => 'credit',
+            'status' => 'delivered',
+        ]);
+
         if ($orderId) {
             $this->form->fill([
                 'order_id' => $orderId,

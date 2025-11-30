@@ -93,7 +93,7 @@ class CustomerResource extends Resource
                             ->default(0)
                             ->required(),
                     ]),
-                Grid::make(1)
+                Grid::make(2)
                     ->schema([
                         TextInput::make('opening_balance')
                             ->label('Opening Balance')
@@ -102,6 +102,10 @@ class CustomerResource extends Resource
                             ->step(0.01)
                             ->helperText('Positive for advance payment, negative for outstanding balance')
                             ->nullable(),
+                        Forms\Components\Toggle::make('is_type_credit')
+                            ->label('Is Credit Type')
+                            ->default(true)
+                            ->helperText('If enabled, payment type will default to credit in POS'),
                     ]),
                 FileUpload::make('avatar')
                     ->image()
@@ -132,6 +136,13 @@ class CustomerResource extends Resource
                     ->colors([
                         'success' => 'sweet_water',
                         'warning' => 'salt_water',
+                    ]),
+                BadgeColumn::make('is_type_credit')
+                    ->label('Credit')
+                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No')
+                    ->colors([
+                        'success' => true,
+                        'warning' => false,
                     ]),
                 TextColumn::make('price')
                     ->money($currency_symbol)
