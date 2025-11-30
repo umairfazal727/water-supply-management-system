@@ -203,6 +203,7 @@ class FinancialSummary extends Page implements HasForms
                     'revenue' => 0,
                     'cash' => 0,
                     'credit' => 0,
+                    'credit_received' => 0,
                     'expenses' => 0,
                 ];
             }
@@ -258,6 +259,7 @@ class FinancialSummary extends Page implements HasForms
             
             $date = $paymentDate->format('Y-m-d');
             
+            // Ensure the date entry exists with all required keys
             if (!isset($resultsByDate[$date])) {
                 $resultsByDate[$date] = [
                     'date' => $date,
@@ -268,6 +270,11 @@ class FinancialSummary extends Page implements HasForms
                     'credit_received' => 0,
                     'expenses' => 0,
                 ];
+            }
+            
+            // Ensure credit_received key exists (safety check)
+            if (!isset($resultsByDate[$date]['credit_received'])) {
+                $resultsByDate[$date]['credit_received'] = 0;
             }
 
             // Payment received is stored as debit_amount in ledger
