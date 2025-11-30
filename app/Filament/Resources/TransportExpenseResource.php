@@ -23,7 +23,7 @@ class TransportExpenseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
     
-    protected static ?string $navigationLabel = 'Transport Expenses';
+    protected static ?string $navigationLabel = 'Transp Expenses';
     
     protected static ?string $navigationGroup = 'Water Transport';
     

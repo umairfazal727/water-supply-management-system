@@ -9,7 +9,7 @@ use App\Models\DeliveryCustomer;
 class TransportLedger extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
-    protected static ?string $navigationLabel = 'Transport Ledger';
+    protected static ?string $navigationLabel = 'Transp Ledger';
     protected static ?string $navigationGroup = 'Water Transport';
     protected static ?int $navigationSort = 2;
 

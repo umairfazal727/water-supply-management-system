@@ -30,6 +30,8 @@ class TransportEmployeeResource extends Resource
     protected static ?string $model = TransportEmployee::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static ?string $navigationLabel = 'Transp Employees';
+
     protected static ?string $navigationGroup = 'Water Transport';
     
     protected static ?int $navigationSort = 6;

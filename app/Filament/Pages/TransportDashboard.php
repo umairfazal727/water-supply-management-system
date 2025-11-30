@@ -10,7 +10,7 @@ use App\Models\Branch;
 class TransportDashboard extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-presentation-chart-line';
-    protected static ?string $navigationLabel = 'Transport Dashboard';
+    protected static ?string $navigationLabel = 'Transp Dashboard';
     protected static ?string $navigationGroup = 'Water Transport';
     protected static ?int $navigationSort = 1;
 

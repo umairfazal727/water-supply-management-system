@@ -20,10 +20,10 @@ class TransportFinancialSummary extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-calculator';
-    protected static ?string $navigationLabel = 'Transport Financial Summary';
+    protected static ?string $navigationLabel = 'Transp Financial Summary';
     protected static ?string $navigationGroup = 'Water Transport';
     protected static string $view = 'filament.pages.transport-financial-summary';
-    protected static ?string $title = 'Transport Financial Summary';
+    protected static ?string $title = 'Transp Financial Summary';
     protected static ?int $navigationSort = 4;
 
     public bool $isLoading = false;
