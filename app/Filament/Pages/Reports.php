@@ -117,7 +117,7 @@ class Reports extends Page
             }
         }
 
-        $orders = $query->orderBy('order_date', 'desc')->get();
+        $orders = $query->orderBy('order_date', 'asc')->get();
 
         // Calculate insights
         $this->insights = [
@@ -142,7 +142,7 @@ class Reports extends Page
             $query->where('expense_category_id', $this->expenseCategoryId);
         }
 
-        $expenses = $query->orderBy('expense_date', 'desc')->get();
+        $expenses = $query->orderBy('expense_date', 'asc')->get();
 
         // Calculate insights
         $this->insights = [
