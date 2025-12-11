@@ -20,6 +20,7 @@ class CreateDelivery extends CreateRecord
         // Always set default values
         $this->form->fill([
             'delivery_date' => now(),
+            'delivery_time' => now()->format('H:i:s'),
             'delivery_number' => 'DEL-' . date('Ymd') . '-' . rand(1000, 9999),
             'payment_method' => 'credit',
             'status' => 'delivered',

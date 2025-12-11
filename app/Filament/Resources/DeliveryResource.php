@@ -85,6 +85,11 @@ class DeliveryResource extends Resource
                                         $set('delivery_date', now());
                                     }
                                     
+                                    // Auto-fill delivery_time if not set
+                                    if (!$get('delivery_time')) {
+                                        $set('delivery_time', now()->format('H:i:s'));
+                                    }
+                                    
                                     // Auto-fill delivery_number if not set
                                     if (!$get('delivery_number')) {
                                         $set('delivery_number', 'DEL-' . date('Ymd') . '-' . rand(1000, 9999));
@@ -102,6 +107,10 @@ class DeliveryResource extends Resource
                 Forms\Components\DatePicker::make('delivery_date')
                     ->required()
                     ->default(fn () => now()),
+                Forms\Components\TimePicker::make('delivery_time')
+                    ->required()
+                    ->default(fn () => now()->format('H:i:s'))
+                    ->seconds(false),
                 Forms\Components\TextInput::make('customer_site')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('customer_location')

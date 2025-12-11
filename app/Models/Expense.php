@@ -13,6 +13,8 @@ class Expense extends Model
         'branch_id',
         'expense_category_id',
         'user_id',
+        'employee_id',
+        'transport_employee_id',
         'driver_id',
         'vehicle_id',
         'expense_type',
@@ -63,5 +65,15 @@ class Expense extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function transportEmployee()
+    {
+        return $this->belongsTo(TransportEmployee::class);
     }
 }

@@ -39,6 +39,12 @@ class ExpenseCategorySeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'name' => 'Employee_Pay',
+                'code' => 'EMPLOYEE_PAY',
+                'description' => 'Employee salary and advance payments',
+                'is_active' => true,
+            ],
+            [
                 'name' => 'Food & Meals',
                 'code' => 'FOOD',
                 'description' => 'Food and meal expenses for employees',

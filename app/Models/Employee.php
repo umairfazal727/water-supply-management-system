@@ -143,6 +143,9 @@ class Employee extends Model
         $this->total_advance_taken += $amount;
         $this->save();
 
+        // Create expense entry for Employee_Pay
+        $this->createExpenseEntry($amount, $data, 'Advance Payment');
+
         return $transaction;
     }
 
@@ -175,6 +178,43 @@ class Employee extends Model
         $this->total_salary_paid += $amount;
         $this->save();
 
+        // Create expense entry for Employee_Pay
+        $this->createExpenseEntry($amount, $data, 'Salary Payment');
+
         return $transaction;
+    }
+
+    /**
+     * Create expense entry for employee payment
+     */
+    protected function createExpenseEntry(float $amount, array $data, string $type): void
+    {
+        // Get or create Employee_Pay expense category
+        $category = \App\Models\ExpenseCategory::firstOrCreate(
+            ['code' => 'EMPLOYEE_PAY'],
+            [
+                'name' => 'Employee_Pay',
+                'description' => 'Employee salary and advance payments',
+                'is_active' => true,
+            ]
+        );
+
+        // Create expense entry
+        \App\Models\Expense::create([
+            'branch_id' => $this->branch_id ?? \App\Models\Branch::first()->id,
+            'expense_category_id' => $category->id,
+            'user_id' => $data['created_by'] ?? auth()->id(),
+            'employee_id' => $this->id,
+            'expense_type' => 'operational',
+            'title' => "{$type} - {$this->name}",
+            'description' => $data['description'] ?? "{$type} for employee {$this->name}",
+            'amount' => $amount,
+            'expense_date' => $data['transaction_date'] ?? now(),
+            'payment_method' => $data['payment_method'] ?? 'cash',
+            'reference_number' => $data['reference_number'] ?? null,
+            'is_approved' => true,
+            'approved_by' => $data['created_by'] ?? auth()->id(),
+            'approved_at' => now(),
+        ]);
     }
 }

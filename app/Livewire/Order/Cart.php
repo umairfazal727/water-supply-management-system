@@ -64,11 +64,29 @@ class Cart extends Component
                 $this->productType = $customer->product_type;
                 $this->price = $customer->price;
                 $this->branchId = $customer->vehicle && $customer->vehicle->branch_id ? $customer->vehicle->branch_id : null;
-                // Set payment type based on customer's is_type_credit
+                // Enforce payment type based on customer's is_type_credit
+                // is_type_credit = true means customer is on credit, false means cash only
                 $this->paymentType = $customer->is_type_credit ? 'credit' : 'cash';
             }
         } else {
             $this->clearFields();
+        }
+    }
+    
+    public function updatedPaymentType($value)
+    {
+        // Enforce payment type based on customer's is_type_credit setting
+        $customerId = session('customer_id');
+        if ($customerId) {
+            $customer = Customer::find($customerId);
+            if ($customer) {
+                // If customer is credit type but user tries to set cash, allow it
+                // If customer is cash only (is_type_credit = false) but user tries credit, reset to cash
+                if (!$customer->is_type_credit && in_array($value, ['credit', 'on_account', 'bank_transfer'])) {
+                    $this->paymentType = 'cash';
+                    session()->flash('error', 'This customer is cash-only and cannot use credit payment methods.');
+                }
+            }
         }
     }
 
