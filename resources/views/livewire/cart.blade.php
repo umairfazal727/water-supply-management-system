@@ -101,7 +101,7 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Type</label>
                             <select wire:model="paymentType"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <option value="credit" >Credit</option>
+                                <option value="credit">Credit</option>
                                 <option value="cash">Cash</option>
                             </select>
                         </div>
