@@ -60,6 +60,7 @@ class Cart extends Component
                 $this->tankerSize = $customer->tanker_size;
                 $this->productType = $customer->product_type;
                 $this->price = $customer->price;
+                $this->paymentType = $customer->is_type_credit ? 'credit' : 'cash';
             }
         } else {
             $this->clearFields();

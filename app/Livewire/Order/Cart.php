@@ -64,8 +64,6 @@ class Cart extends Component
                 $this->productType = $customer->product_type;
                 $this->price = $customer->price;
                 $this->branchId = $customer->vehicle && $customer->vehicle->branch_id ? $customer->vehicle->branch_id : null;
-                // Enforce payment type based on customer's is_type_credit
-                // is_type_credit = true means customer is on credit, false means cash only
                 $this->paymentType = $customer->is_type_credit ? 'credit' : 'cash';
             }
         } else {
