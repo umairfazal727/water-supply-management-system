@@ -88,4 +88,28 @@ class Ledger extends Model
 
         return static::create($ledgerData);
     }
+
+    /**
+     * Recalculate all ledger balances for a customer (e.g. after edit or delete of an entry).
+     */
+    public static function recalculateBalancesForCustomer($customerId): void
+    {
+        $customer = Customer::find($customerId);
+        if (!$customer) {
+            return;
+        }
+
+        $ledgers = static::where('customer_id', $customerId)
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $runningBalance = (float) ($customer->opening_balance ?? 0);
+
+        foreach ($ledgers as $ledger) {
+            $runningBalance = $runningBalance - (float) $ledger->credit_amount + (float) $ledger->debit_amount;
+            $ledger->balance = $runningBalance;
+            $ledger->saveQuietly();
+        }
+    }
 }

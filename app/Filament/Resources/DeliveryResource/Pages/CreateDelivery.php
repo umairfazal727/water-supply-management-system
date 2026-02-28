@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\DeliveryResource\Pages;
 
 use App\Filament\Resources\DeliveryResource;
+use App\Models\Order;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -14,23 +15,26 @@ class CreateDelivery extends CreateRecord
     {
         parent::mount();
 
-        // Pre-fill form with order_id from query parameters
         $orderId = request()->query('order_id');
 
-        // Always set default values
-        $this->form->fill([
+        $defaults = [
             'delivery_date' => now(),
             'delivery_time' => now()->format('H:i:s'),
             'delivery_number' => 'DEL-' . date('Ymd') . '-' . rand(1000, 9999),
             'payment_method' => 'credit',
             'status' => 'delivered',
-        ]);
+        ];
 
         if ($orderId) {
-            $this->form->fill([
-                'order_id' => $orderId,
-            ]);
+            $order = Order::find($orderId);
+            $defaults['order_id'] = (int) $orderId;
+            if ($order) {
+                $defaults['trip_size'] = $order->tanker_size;
+                $defaults['total_amount'] = $order->total_price ?? $order->price;
+            }
         }
+
+        $this->form->fill($defaults);
     }
 
     protected function getRedirectUrl(): string

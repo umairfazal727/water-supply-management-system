@@ -42,4 +42,13 @@ class Branch extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    /**
+     * Get the main branch (e.g. for expense allocation).
+     * Uses the first branch by id when no is_main flag exists.
+     */
+    public static function getMainBranch(): ?self
+    {
+        return static::orderBy('id')->first();
+    }
 }

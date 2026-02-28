@@ -62,7 +62,7 @@ class Order extends Model
                 
                 // Recalculate balances for all remaining ledger entries for this customer
                 if ($customerId) {
-                    static::recalculateCustomerLedgerBalances($customerId);
+                    Ledger::recalculateBalancesForCustomer($customerId);
                 }
             }
             // Scenario 2: Payment type changed from cash/bank_transfer to credit/on_account
@@ -99,7 +99,7 @@ class Order extends Model
                 
                 // Recalculate balances for all ledger entries for this customer
                 if ($order->customer_id) {
-                    static::recalculateCustomerLedgerBalances($order->customer_id);
+                    Ledger::recalculateBalancesForCustomer($order->customer_id);
                 }
             }
             // Scenario 4: Payment type stayed as credit/on_account, price unchanged, but other fields changed
@@ -115,7 +115,7 @@ class Order extends Model
                     $existingLedger->saveQuietly();
                     // Recalculate if date changed (affects chronological order)
                     if ($order->customer_id) {
-                        static::recalculateCustomerLedgerBalances($order->customer_id);
+                        Ledger::recalculateBalancesForCustomer($order->customer_id);
                     }
                 } else {
                     $existingLedger->saveQuietly();
@@ -135,37 +135,10 @@ class Order extends Model
                 
                 // Recalculate balances for all remaining ledger entries for this customer
                 if ($customerId) {
-                    static::recalculateCustomerLedgerBalances($customerId);
+                    Ledger::recalculateBalancesForCustomer($customerId);
                 }
             }
         });
-    }
-
-    /**
-     * Recalculate all ledger balances for a customer after deletion
-     */
-    protected static function recalculateCustomerLedgerBalances($customerId)
-    {
-        $customer = Customer::find($customerId);
-        if (!$customer) {
-            return;
-        }
-
-        // Get all ledger entries for this customer in chronological order
-        $ledgers = Ledger::where('customer_id', $customerId)
-            ->orderBy('transaction_date', 'asc')
-            ->orderBy('id', 'asc')
-            ->get();
-
-        // Start with opening balance
-        $runningBalance = (float) ($customer->opening_balance ?? 0);
-
-        // Recalculate each entry's balance
-        foreach ($ledgers as $ledger) {
-            $runningBalance = $runningBalance - (float) $ledger->credit_amount + (float) $ledger->debit_amount;
-            $ledger->balance = $runningBalance;
-            $ledger->saveQuietly(); // Save without triggering events
-        }
     }
 
     public function items()

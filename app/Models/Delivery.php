@@ -17,6 +17,7 @@ class Delivery extends Model
         'order_id',
         'delivery_number',
         'delivery_date',
+        'delivery_time',
         'customer_site',
         'customer_location',
         'trip_size',

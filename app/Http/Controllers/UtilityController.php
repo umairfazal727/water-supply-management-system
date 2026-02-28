@@ -59,7 +59,7 @@ class UtilityController extends Controller
             'default_font' => 'terminus',
             'mode' => 'utf-8',
             'shrink_tables_to_fit' => 0,
-            'format' => [75, 200],  
+            'format' => 'A4',
             'orientation' => 'P',
             'margin_left' => 3,
             'margin_right' => 3,

@@ -127,7 +127,7 @@ class Cart extends Component
         $this->clearCustomer();
         
         // Redirect to orders list
-        return $this->redirect(url('admin/orders'));
+        // return $this->redirect(url('admin/orders'));
     }
 
     public function clearCustomer()

@@ -199,9 +199,10 @@ class Employee extends Model
             ]
         );
 
-        // Create expense entry
+        // Create expense entry (always use main branch)
+        $mainBranch = \App\Models\Branch::getMainBranch();
         \App\Models\Expense::create([
-            'branch_id' => $this->branch_id ?? \App\Models\Branch::first()->id,
+            'branch_id' => $mainBranch?->id ?? \App\Models\Branch::first()?->id,
             'expense_category_id' => $category->id,
             'user_id' => $data['created_by'] ?? auth()->id(),
             'employee_id' => $this->id,
