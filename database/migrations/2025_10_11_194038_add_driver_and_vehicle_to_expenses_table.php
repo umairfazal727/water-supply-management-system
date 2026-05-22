@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('expenses', function (Blueprint $table) {
-            $table->enum('expense_type', ['general', 'transport'])->default('general')->after('vehicle_id');
+            $table->enum('expense_type', ['general', 'transport', 'operational'])->default('general')->after('vehicle_id');
         });
     }
 

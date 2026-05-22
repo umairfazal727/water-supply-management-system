@@ -15,8 +15,10 @@ return new class extends Migration
         // Check if expense_type column exists, if not add it first
         if (!Schema::hasColumn('expenses', 'expense_type')) {
             Schema::table('expenses', function (Blueprint $table) {
-                $table->enum('expense_type', ['general', 'transport'])->default('general')->after('vehicle_id');
+                $table->enum('expense_type', ['general', 'transport', 'operational'])->default('general')->after('vehicle_id');
             });
+        } else {
+            DB::statement("ALTER TABLE expenses MODIFY COLUMN expense_type ENUM('general', 'transport', 'operational') NOT NULL DEFAULT 'general'");
         }
         
         // Update all existing expenses that have null expense_type to 'general'
