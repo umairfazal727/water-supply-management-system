@@ -55,7 +55,7 @@
                     <div>
                         <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Total Expenses</h4>
                         <p class="text-2xl font-bold text-red-600">
-                            {{ $insights['total_expenses'] ?? 0 }}
+                            {{ config('settings.currency_symbol', 'AED') }} {{ $insights['total_expenses'] ?? 0 }}
                         </p>
                     </div>
                 </div>

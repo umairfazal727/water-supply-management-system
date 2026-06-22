@@ -59,7 +59,7 @@
                         <div>
                             <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Total Amount</h4>
                             <p class="text-2xl font-bold text-green-600">
-                                ${{ number_format($insights['total_amount'] ?? 0, 2) }}
+                                {{ config('settings.currency_symbol', 'AED') }} {{ number_format($insights['total_amount'] ?? 0, 2) }}
                             </p>
                         </div>
                     @endif
@@ -74,7 +74,7 @@
                         <div>
                             <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Total Amount</h4>
                             <p class="text-2xl font-bold text-orange-600">
-                                ${{ number_format($insights['total_amount'] ?? 0, 2) }}
+                                {{ config('settings.currency_symbol', 'AED') }}{{ number_format($insights['total_amount'] ?? 0, 2) }}
                             </p>
                         </div>
                     @endif

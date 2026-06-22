@@ -145,13 +145,13 @@ class Cart extends Component
         
         // Check if order's company_name matches "REEM AL FALAJ TR."
         // For multiple orders, check the first order
-        $firstOrder = $ordersCreated[0];
-        if ($firstOrder->company_name == 'REEM AL FALAJ TR.') {
-            // Clear the customer selection
-            $this->clearCustomer();
-            // Redirect to delivery creation with order_id (first order)
-            return $this->redirect(url('admin/deliveries/create?order_id=' . $firstOrder->id));
-        }
+        // $firstOrder = $ordersCreated[0];
+        // if ($firstOrder->company_name == 'REEM AL FALAJ TR.') {
+        //     // Clear the customer selection
+        //     $this->clearCustomer();
+        //     // Redirect to delivery creation with order_id (first order)
+        //     return $this->redirect(url('admin/deliveries/create?order_id=' . $firstOrder->id));
+        // }
         
         // Clear the customer selection and stay on POS page
         $this->clearCustomer();
